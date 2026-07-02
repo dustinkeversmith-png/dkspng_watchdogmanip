@@ -1,0 +1,4 @@
+{"id":"fs_evt_001","timestamp":"2026-06-26T12:00:00Z","trigger":"FileModified","path":"./src/parser/mod.rs","old_path":null,"context_id":"parser","metadata":{}}
+{"id":"fs_evt_002","timestamp":"2026-06-26T12:01:00Z","trigger":"FileModified","path":"./src/navigation/mod.rs","old_path":null,"context_id":"navigation","metadata":{}}
+{"id":"fs_evt_003","timestamp":"2026-06-26T12:02:00Z","trigger":"FileModified","path":"./docs/parser_pipeline.md","old_path":null,"context_id":"docs","metadata":{}}
+{"id":"fs_evt_004","timestamp":"2026-06-26T12:03:00Z","trigger":"FileDeleted","path":"./src/parser/old.rs","old_path":null,"context_id":"parser","metadata":{}}

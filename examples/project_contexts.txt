@@ -1,0 +1,10 @@
+# Context hierarchy mock fixture
+@Context project . inheritance=ancestors
+@Context parser ./src/parser parent=project inheritance=ancestors
+@Context docs ./docs parent=project inheritance=ancestors
+@Alias parser ./src/parser/mod.rs context=project type=file marker=BoundarySolver
+@Alias parser-docs ./docs/PARSER_PIPELINE.md context=docs type=file
+@Alias docs ./docs context=project type=folder
+@current Finish parser boundary solver examples context=docs
+@Queue Refactor alias target parsing context=parser priority=high status=open
+@Symbol struct ParserPipeline context=parser path=./src/parser/mod.rs line=12

@@ -1,0 +1,19 @@
+{
+  "activeProfile": {
+    "name": "Main",
+    "modifiedAt": "2026-06-15T05:25:45.145Z"
+  },
+  "profileUpdate": true,
+  "profileUpdateDelay": 800,
+  "uiUpdate": true,
+  "uiUpdateInterval": 1000,
+  "devices": {
+    "eeaedcb0b20cca55edbaa5e96bcac17e2687dc9e48b8b3a2e692c94cf6ffacaa": "C:\\Users\\Cutie Magic 500\\AppData\\Local\\ObsidianPlugins\\Data\\Profiles"
+  },
+  "statusbarInteraction": {
+    "click": "auto",
+    "ctrl_click": "none",
+    "shift_click": "none",
+    "alt_click": "none"
+  }
+}

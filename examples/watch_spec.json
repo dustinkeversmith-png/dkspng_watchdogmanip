@@ -1,0 +1,49 @@
+{
+  "id": "watch_parser_src",
+  "name": "Parser Source Watch",
+  "root": "./src",
+  "recursive": true,
+  "include": ["**/*.rs", "**/*.md"],
+  "exclude": ["target/**", ".git/**"],
+  "debounce_ms": 500,
+  "enabled": true,
+  "rules": [
+    {
+      "id": "rule_rs_modified_refresh_parser",
+      "name": "Refresh parser context when Rust parser files change",
+      "trigger": "FileModified",
+      "conditions": [
+        { "kind": "ExtensionIs", "extension": "rs" },
+        { "kind": "PathContains", "text": "parser" }
+      ],
+      "actions": [
+        { "kind": "EmitHistoryEvent", "event_type": "FileModified" },
+        { "kind": "RunRoutine", "routine_id": "refresh_parser_context" }
+      ]
+    },
+    {
+      "id": "rule_docs_modified_reindex_docs",
+      "name": "Reindex docs when markdown changes",
+      "trigger": "FileModified",
+      "conditions": [
+        { "kind": "ExtensionIs", "extension": "md" }
+      ],
+      "actions": [
+        { "kind": "ReindexContext", "context_id": "docs" },
+        { "kind": "RefreshAliases", "context_id": "docs" }
+      ]
+    }
+  ],
+  "routines": [
+    {
+      "id": "refresh_parser_context",
+      "name": "Refresh Parser Context",
+      "steps": [
+        { "kind": "ReindexContext", "context_id": "parser" },
+        { "kind": "RefreshAliases", "context_id": "parser" },
+        { "kind": "RunCommand", "command": "cargo test parser", "cwd": "." },
+        { "kind": "EmitEvent", "event_type": "ContextUpdated" }
+      ]
+    }
+  ]
+}

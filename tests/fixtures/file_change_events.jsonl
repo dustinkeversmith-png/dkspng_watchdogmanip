@@ -1,0 +1,5 @@
+{"id":"evt_rs_1","timestamp":"2026-06-30T18:00:00Z","trigger":"FileModified","path":"tests/fixtures/deep_tree/src/parser/boundary.rs","old_path":null,"context_id":"parser","metadata":{}}
+{"id":"evt_md_1","timestamp":"2026-06-30T18:01:00Z","trigger":"FileModified","path":"tests/fixtures/deep_tree/docs/guides/parser.md","old_path":null,"context_id":"docs","metadata":{}}
+{"id":"evt_ignored_target","timestamp":"2026-06-30T18:02:00Z","trigger":"FileModified","path":"tests/fixtures/deep_tree/target/generated/ignored.rs","old_path":null,"context_id":"target","metadata":{}}
+{"id":"evt_ignored_tmp","timestamp":"2026-06-30T18:03:00Z","trigger":"FileModified","path":"tests/fixtures/deep_tree/src/parser/scratch.tmp","old_path":null,"context_id":"parser","metadata":{}}
+{"id":"evt_timer_due","timestamp":"2026-06-30T18:04:00Z","trigger":"Timer","path":"tests/fixtures/deep_tree","old_path":null,"context_id":"project","metadata":{"schedule":"due"}}

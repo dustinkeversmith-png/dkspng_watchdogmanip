@@ -1,0 +1,397 @@
+Yes. I’d expand your parser definition into a fuller vocabulary of **parser capability keywords** so your macro processor can describe every stage from detection → grouping → extraction → normalization → output.
+
+Here is a stronger keyword set.
+
+```text
+# Parser Definition
+
+Parse
+    Source
+    InputStream
+    TextSpan
+    CursorPosition
+    LineRange
+    CharacterRange
+    DocumentContext
+    ParentContext
+    SurroundingContext
+
+    IdentityCommand
+        CommandPrefix
+        CommandName
+        CommandAliases
+        CommandChain
+        CommandScope
+        CommandNamespace
+        CommandModifiers
+        CommandConfidence
+
+    IdentityPattern
+        ExplicitIdentity
+        ImplicitIdentity
+        InferredIdentity
+        CompositeIdentity
+        NestedIdentity
+        InlineIdentity
+        BlockIdentity
+        LooseIdentity
+        UnknownIdentity
+
+    ExpectedParameters
+        PositionalParameters
+        NamedParameters
+        OptionalParameters
+        RequiredParameters
+        RepeatedParameters
+        VariadicParameters
+        ParameterAliases
+        ParameterDefaults
+        ParameterTypeHints
+        ParameterValidation
+
+    ExpectedMembers
+        RequiredMembers
+        OptionalMembers
+        RepeatedMembers
+        NestedMembers
+        MemberAliases
+        MemberDefaults
+        MemberTypeHints
+        MemberValidation
+
+    GeneralIdentities
+        MarkdownHeading
+        BulletList
+        NumberedList
+        IndentedBlock
+        CodeBlock
+        QuoteBlock
+        TableBlock
+        Divider
+        Tabs
+        Delimiters
+        Parentheses
+        Brackets
+        Braces
+        InlineMarkers
+        StatusMarkers
+        PathMarkers
+        ReferenceMarkers
+
+    BoundarySolver
+        StartBoundary
+        EndBoundary
+        SoftBoundary
+        HardBoundary
+        NestedBoundary
+        InlineBoundary
+        BlockBoundary
+        IndentationBoundary
+        HeadingBoundary
+        BlankLineBoundary
+        NextCommandBoundary
+        SameLineBoundary
+        ContinuationBoundary
+        EscapeBoundary
+        AmbiguousBoundary
+        BoundaryConfidence
+        BoundaryReason
+
+    GeneralTypes
+        Text
+        Title
+        Description
+        Path
+        FilePath
+        FolderPath
+        Url
+        Symbol
+        Identifier
+        Alias
+        Tag
+        Category
+        Status
+        Date
+        Time
+        Duration
+        Priority
+        Number
+        Boolean
+        List
+        Map
+        Code
+        Markdown
+        NaturalLanguage
+        Question
+        Answer
+        ActionVerb
+        ObjectReference
+        WorkspaceReference
+        ProjectReference
+        ModuleReference
+        TaskReference
+        EntityReference
+        RelationshipReference
+
+    ExtractionMethod
+        RegexExtraction
+        DelimiterExtraction
+        IndentationExtraction
+        HeadingExtraction
+        InlineExtraction
+        BlockExtraction
+        ProximityExtraction
+        HeuristicExtraction
+        SchemaExtraction
+        NaturalLanguageExtraction
+        FallbackExtraction
+        MultiPassExtraction
+
+    Normalization
+        CanonicalCommand
+        CanonicalMembers
+        CanonicalParameters
+        NormalizedTitle
+        NormalizedTags
+        NormalizedStatus
+        NormalizedPath
+        NormalizedReferences
+        NormalizedRelationships
+        AliasResolution
+        TypoCorrection
+        CaseNormalization
+        WhitespaceNormalization
+
+    Resolution
+        ContextResolution
+        ParentResolution
+        ReferenceResolution
+        AliasResolution
+        PathResolution
+        EntityResolution
+        RelationshipResolution
+        StatusResolution
+        QueueResolution
+        ScopeResolution
+
+    Inference
+        InferredCommand
+        InferredType
+        InferredTitle
+        InferredDescription
+        InferredStatus
+        InferredPriority
+        InferredQueue
+        InferredContext
+        InferredReferences
+        InferredRelationships
+        InferenceConfidence
+        InferenceReason
+
+    Validation
+        ParseValidity
+        SchemaValidity
+        MissingMembers
+        UnknownMembers
+        InvalidParameters
+        InvalidBoundary
+        InvalidNesting
+        ConflictingCommands
+        DuplicateDefinitions
+        DeprecatedCommandUsage
+        ValidationWarnings
+        ValidationErrors
+
+    Recovery
+        ErrorRecovery
+        PartialParse
+        UnknownCommandCapture
+        AmbiguousParseCapture
+        OrphanTextCapture
+        DanglingReferenceCapture
+        MalformedBlockCapture
+        FallbackObjectCreation
+        HumanReviewRequired
+
+    Output
+        ParsedObject
+        ParsedCommand
+        ParsedMembers
+        ParsedParameters
+        ParsedSpan
+        SourceTrace
+        ConfidenceScore
+        Warnings
+        Errors
+        SuggestedFixes
+        CanonicalText
+        JsonOutput
+        AstOutput
+        EventOutput
+        QueueAction
+        DocumentationAction
+```
+
+I would especially add these concepts because they match your “expansive language” style:
+
+```text
+IntentDetection
+    Detects whether loose prose is trying to create a task, idea, reference, macro, queue item, or note.
+
+LooseObjectCapture
+    Captures text that is probably meaningful even when it does not follow the formal command syntax.
+
+ContextCarryover
+    Allows one command to inherit project/module/workspace context from previous nearby commands.
+
+ProximityBinding
+    Binds loose descriptions, bullets, file paths, or statuses to the nearest likely command.
+
+CommandChain
+    Handles things like:
+        @Project @Idea
+        @Macro @Clipboard
+        @Task Research automatic workflows
+        @in workspace/parser @Task clean aliases
+
+SoftSchema
+    Allows partial objects to be valid:
+        @Idea
+            maybe build this later
+
+HardSchema
+    Enforces strict structure for commands that need it:
+        @Alias
+            Name:
+            Target:
+
+AmbiguitySet
+    Stores multiple possible parses instead of forcing one interpretation too early.
+
+ConfidenceReason
+    Explains why the parser chose one parse over another.
+
+SourceTrace
+    Keeps exact original line/character ranges so every parsed object can be traced back to source text.
+```
+
+For your macro processor specifically, I’d structure the parser around these major top-level stages:
+
+```text
+ParserPipeline
+    1. LexicalScan
+    2. CommandDetection
+    3. BoundarySolving
+    4. BlockAssembly
+    5. ParameterExtraction
+    6. MemberExtraction
+    7. TypeRecognition
+    8. ContextResolution
+    9. InferencePass
+    10. ValidationPass
+    11. RecoveryPass
+    12. NormalizationPass
+    13. OutputEmission
+```
+
+And I’d add these keywords for your “anything below” style, where text can be messy, mixed, and not always formatted the same way:
+
+```text
+LooseSyntax
+FreeformSyntax
+HybridSyntax
+MalformedSyntax
+PartialSyntax
+ImplicitSyntax
+ContextualSyntax
+NearbyText
+TrailingText
+LeadingText
+OrphanText
+ContinuationText
+IndentedContinuation
+BulletContinuation
+HeadingContinuation
+SameLinePayload
+NextLinePayload
+UntilNextCommand
+UntilBlankLine
+UntilOutdent
+UntilHeading
+UntilDelimiter
+```
+
+A good final version of your parser definition could look like this:
+
+```text
+Parse
+    IdentityCommand
+        Detects command identity from explicit @commands, chained commands,
+        aliases, command prefixes, and inferred natural language triggers.
+
+    ExpectedParameters
+        Defines what arguments the command can receive directly after the
+        command identity.
+
+    ExpectedMembers
+        Defines what named or structural fields may appear inside the command body.
+
+    GeneralIdentities
+        Recognizes structural syntax such as headings, bullets, tabs, delimiters,
+        inline status markers, code blocks, references, paths, and prose regions.
+
+    BoundarySolver
+        Determines where a command starts, where it ends, whether its body
+        continues across lines, and whether nearby text should be attached.
+
+    GeneralTypes
+        Recognizes reusable semantic types such as paths, URLs, tags, statuses,
+        dates, priorities, aliases, project references, module references,
+        object references, and action verbs.
+
+    ExtractionMethod
+        Defines how content is extracted: inline, block, delimiter, indentation,
+        heading, regex, schema, heuristic, natural language, or fallback.
+
+    ContextResolution
+        Resolves parent project, workspace, module, folder, file, previous command,
+        current objective, references, aliases, and implied ownership.
+
+    Inference
+        Infers missing command type, title, status, queue, priority, context,
+        relationships, or documentation behavior from ambiguous language.
+
+    Validation
+        Checks schema fit, missing fields, invalid members, unknown commands,
+        duplicate objects, deprecated commands, bad nesting, and conflicting parses.
+
+    Recovery
+        Captures malformed, partial, orphaned, ambiguous, or unknown text as
+        reviewable objects instead of discarding it.
+
+    Normalization
+        Converts all parsed variants into canonical command names, normalized
+        fields, standard statuses, resolved references, and consistent output shape.
+
+    Output
+        Emits parsed object records, AST nodes, source traces, warnings, errors,
+        confidence scores, queue actions, documentation actions, and suggested fixes.
+```
+
+The most important additions are probably:
+
+```text
+ContextResolution
+Inference
+Validation
+Recovery
+Normalization
+SourceTrace
+ConfidenceScore
+AmbiguitySet
+LooseObjectCapture
+ProximityBinding
+CommandChain
+```
+
+Those are what will let the parser handle your actual writing style instead of only clean command syntax.

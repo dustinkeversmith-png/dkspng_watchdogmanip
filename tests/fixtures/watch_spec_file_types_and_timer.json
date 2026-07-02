@@ -1,0 +1,62 @@
+{
+  "id": "watch_parser_docs",
+  "name": "Watch Parser Docs and Rust Files",
+  "root": "tests/fixtures/deep_tree",
+  "recursive": true,
+  "include": ["**/*.rs", "**/*.md"],
+  "exclude": ["target/**", ".git/**", "node_modules/**", "**/*.tmp"],
+  "debounce_ms": 250,
+  "enabled": true,
+  "rules": [
+    {
+      "id": "rust_file_modified",
+      "name": "Rust source modified",
+      "trigger": "FileModified",
+      "conditions": [{ "kind": "ExtensionIs", "extension": "rs" }],
+      "actions": [
+        { "kind": "EmitHistoryEvent", "event_type": "FileModified" },
+        { "kind": "RunRoutine", "routine_id": "refresh_parser_context" }
+      ]
+    },
+    {
+      "id": "markdown_file_modified",
+      "name": "Markdown doc modified",
+      "trigger": "FileModified",
+      "conditions": [{ "kind": "ExtensionIs", "extension": "md" }],
+      "actions": [
+        { "kind": "ReindexContext", "context_id": "docs" },
+        { "kind": "RefreshAliases", "context_id": "docs" }
+      ]
+    },
+    {
+      "id": "timer_refresh",
+      "name": "Scheduled refresh timer",
+      "trigger": "Timer",
+      "conditions": [{ "kind": "MetadataEquals", "key": "schedule", "value": "due" }],
+      "actions": [
+        { "kind": "RunRoutine", "routine_id": "timely_refresh" }
+      ]
+    }
+  ],
+  "routines": [
+    {
+      "id": "refresh_parser_context",
+      "name": "Refresh parser context",
+      "steps": [
+        { "kind": "ScanFiles", "root": "./src/parser" },
+        { "kind": "ParseMacros", "files": ["./docs/parser.md"] },
+        { "kind": "RefreshAliases", "context_id": "parser" },
+        { "kind": "EmitEvent", "event_type": "ContextUpdated" }
+      ]
+    },
+    {
+      "id": "timely_refresh",
+      "name": "Timely routine refresh",
+      "steps": [
+        { "kind": "RunCommand", "command": "cargo test", "cwd": "." },
+        { "kind": "ReindexContext", "context_id": "project" },
+        { "kind": "EmitEvent", "event_type": "RoutineRan" }
+      ]
+    }
+  ]
+}

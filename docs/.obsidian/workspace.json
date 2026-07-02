@@ -1,0 +1,218 @@
+{
+  "main": {
+    "id": "cc0908c2b07f9578",
+    "type": "split",
+    "children": [
+      {
+        "id": "a6d832ef76e7dafb",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "f2573ab99feef244",
+            "type": "leaf",
+            "pinned": true,
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Todo.md",
+                "mode": "source",
+                "source": false
+              },
+              "pinned": true,
+              "icon": "lucide-file",
+              "title": "Todo"
+            }
+          },
+          {
+            "id": "8147af783f03b44e",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Missions/m_1/LOG_EXPANSION.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "LOG_EXPANSION"
+            }
+          }
+        ],
+        "currentTab": 1
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "9882ba62babd9c4d",
+    "type": "split",
+    "children": [
+      {
+        "id": "9dbce9e28ac55861",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "fe6d6bbd7b621749",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false
+              },
+              "icon": "lucide-folder-closed",
+              "title": "Files"
+            }
+          },
+          {
+            "id": "5eb833479ad82042",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "Search"
+            }
+          },
+          {
+            "id": "3065b03c1d42aacc",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "Bookmarks"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 263.5
+  },
+  "right": {
+    "id": "4ab71129a44b5db7",
+    "type": "split",
+    "children": [
+      {
+        "id": "ca4e5ef71f5a9695",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "65758e50f5b87f19",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "Missions/m_1/LOG_EXPANSION.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "Backlinks for LOG_EXPANSION"
+            }
+          },
+          {
+            "id": "e05a67393d805b37",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "Outgoing links"
+            }
+          },
+          {
+            "id": "6a33294cad1d46d8",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "Tags"
+            }
+          },
+          {
+            "id": "b0d2b63a483664ad",
+            "type": "leaf",
+            "state": {
+              "type": "all-properties",
+              "state": {
+                "sortOrder": "frequency",
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-archive",
+              "title": "All properties"
+            }
+          },
+          {
+            "id": "5357491c9f1c7e91",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "Outline"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Open quick switcher": false,
+      "graph:Open graph view": false,
+      "canvas:Create new canvas": false,
+      "daily-notes:Open today's daily note": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false,
+      "bases:Create new base": false
+    }
+  },
+  "active": "8147af783f03b44e",
+  "lastOpenFiles": [
+    "Missions/m_1/m_1.md",
+    "Missions/m_1/LOG_EXPANSION.md",
+    "DATABASE_SETUP.md",
+    "NAVIGATION_ARCHITECTURE.md",
+    "Missions/m_1",
+    "Missions",
+    "TOPICS_LIST.md",
+    "PAR_DATA_STRUCTURES.md",
+    "Todo.md",
+    "NEURAL_OPERATOR/AI/GALERKIN_MAGIC.md",
+    "AI/FIELDS_INFO.md",
+    "AI/GPU_STRUCT.md",
+    "AI",
+    "NEURAL_OPERATOR/AI/Darcy A(x).md"
+  ]
+}

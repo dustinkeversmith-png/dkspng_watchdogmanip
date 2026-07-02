@@ -1,0 +1,11 @@
+@Task Fix boundary solver
+Anything below this is the messy body.
+- figure out when @Idea starts
+- keep source trace
+
+@Project @Idea Parser Context Workbench
+I want the local folder context to carry aliases and currents.
+
+(done) update docs around @Alias parser
+
+Maybe revisit the watchdog routine that refreshes parser docs.

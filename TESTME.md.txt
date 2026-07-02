@@ -1,0 +1,39 @@
+Done — I merged the uploaded package into **one Rust application** while keeping each engine modularly separated.
+
+[Download the unified Rust app](sandbox:/mnt/data/macro_os_engines_app.zip)
+
+It now has one Cargo project:
+
+```text
+macro_os_engines_app/
+  Cargo.toml
+  src/
+    main.rs
+    lib.rs
+    parse/
+    context/
+    navigation/
+    history/
+    watchdog/
+  examples/
+  tests/
+  docs/
+```
+
+Unified CLI binary:
+
+```bash
+cargo run --bin macro-os -- ...
+```
+
+Example commands:
+
+```bash
+cargo run --bin macro-os -- parse examples/ambiguous_macros.txt --pretty
+cargo run --bin macro-os -- context index examples/project_contexts.txt
+cargo run --bin macro-os -- nav resolve parser --scope parser
+cargo run --bin macro-os -- history stats examples/mock_history_events.jsonl
+cargo run --bin macro-os -- watchdog simulate examples/watch_spec.json examples/file_events.jsonl --expand-routines
+```
+
+I could not run `cargo test` here because Cargo is not installed in this environment, but I added integrated tests and included the validation commands in the README.
