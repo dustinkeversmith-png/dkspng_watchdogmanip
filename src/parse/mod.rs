@@ -5,14 +5,20 @@
 //! inferred objectives. The crate is organized as independent passes so an agent
 //! can add behaviors without coupling extraction logic to command definitions.
 
+pub mod boundary;
+pub mod database;
+pub mod extractors;
+pub mod hierarchy;
 pub mod model;
+pub mod parser;
 pub mod passes;
 pub mod pipeline;
-pub mod database;
 pub mod registry;
+pub mod seeds;
 
 pub use self::model::*;
+pub use self::parser::Parser;
 pub use self::pipeline::{MacroPipeline, PipelineConfig};
-pub use self::registry::{default_registry, CommandRegistry};
+pub use self::registry::{default_registry, CommandLayoutKind, CommandRegistry, CommandSpec};
 
 pub use self::database::*;

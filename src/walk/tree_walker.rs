@@ -34,7 +34,10 @@ impl TreeWalkerConfig {
         self
     }
 
-    pub fn include_extensions(mut self, extensions: impl IntoIterator<Item = impl Into<String>>) -> Self {
+    pub fn include_extensions(
+        mut self,
+        extensions: impl IntoIterator<Item = impl Into<String>>,
+    ) -> Self {
         self.include_extensions = extensions
             .into_iter()
             .map(|ext| ext.into().trim_start_matches('.').to_ascii_lowercase())

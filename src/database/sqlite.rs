@@ -1,8 +1,8 @@
+use crate::database::health::{check_sqlite_health, DatabaseHealthReport};
 use crate::database::model::{
     CommandSearchHit, CommandSearchOptions, DatabaseStats, NewParsedCommandRecord,
     StoredParsedCommandRecord,
 };
-use crate::database::health::{check_sqlite_health, DatabaseHealthReport};
 use crate::parse::model::CommandKind;
 use anyhow::{Context, Result};
 use rusqlite::{params, Connection, OptionalExtension};
@@ -35,6 +35,10 @@ impl CommandSqliteDatabase {
             .unwrap_or(false)
     }
 
+    pub fn connection(&self) -> &Connection {
+        &self.conn
+    }
+
     pub fn open_existing(path: impl AsRef<Path>) -> Result<Self> {
         let conn = Connection::open(path.as_ref())
             .with_context(|| format!("failed to open sqlite db at {}", path.as_ref().display()))?;
@@ -58,30 +62,11 @@ impl CommandSqliteDatabase {
     }
 
     pub fn drop_schema(&self) -> Result<()> {
-        self.conn.execute_batch(
-            r#"
-            DROP TABLE IF EXISTS command_fts;
-            DROP TABLE IF EXISTS command_statuses;
-            DROP TABLE IF EXISTS command_references;
-            DROP TABLE IF EXISTS command_tags;
-            DROP TABLE IF EXISTS command_parameters;
-            DROP TABLE IF EXISTS parsed_commands;
-            DROP TABLE IF EXISTS sources;
-            "#,
-        )?;
-
-        Ok(())
+        crate::parse::database::migrations::drop_parse_command_schema(&self.conn)
     }
 
     pub fn create_schema(&self) -> Result<()> {
-        self.create_sources_table()?;
-        self.create_commands_table()?;
-        self.create_parameters_table()?;
-        self.create_tags_table()?;
-        self.create_references_table()?;
-        self.create_statuses_table()?;
-        self.create_fts_table()?;
-        Ok(())
+        crate::parse::database::migrations::create_parse_command_schema(&self.conn)
     }
 
     pub fn create_sources_table(&self) -> Result<()> {
@@ -299,7 +284,8 @@ impl CommandSqliteDatabase {
                     let kind_json: String = row.get(3)?;
                     let members_json: String = row.get(8)?;
 
-                    let kind: CommandKind = serde_json::from_str(&kind_json).map_err(to_sql_json_err)?;
+                    let kind: CommandKind =
+                        serde_json::from_str(&kind_json).map_err(to_sql_json_err)?;
                     let members = serde_json::from_str(&members_json).map_err(to_sql_json_err)?;
 
                     Ok(StoredParsedCommandRecord {
@@ -440,12 +426,16 @@ impl CommandSqliteDatabase {
             source_count: self
                 .conn
                 .query_row("SELECT COUNT(*) FROM sources", [], |row| row.get(0))?,
-            command_count: self
-                .conn
-                .query_row("SELECT COUNT(*) FROM parsed_commands", [], |row| row.get(0))?,
-            tag_count: self
-                .conn
-                .query_row("SELECT COUNT(DISTINCT tag) FROM command_tags", [], |row| row.get(0))?,
+            command_count: self.conn.query_row(
+                "SELECT COUNT(*) FROM parsed_commands",
+                [],
+                |row| row.get(0),
+            )?,
+            tag_count: self.conn.query_row(
+                "SELECT COUNT(DISTINCT tag) FROM command_tags",
+                [],
+                |row| row.get(0),
+            )?,
             reference_count: self.conn.query_row(
                 "SELECT COUNT(DISTINCT reference) FROM command_references",
                 [],
@@ -584,7 +574,6 @@ impl CommandSqliteDatabase {
         Ok(values)
     }
 
-
     pub fn dump_table(&self, table_name: &str, limit: usize) -> anyhow::Result<DatabaseTableDump> {
         let allowed_tables = [
             "sources",
@@ -635,7 +624,10 @@ impl CommandSqliteDatabase {
         })
     }
 
-    pub fn dump_core_tables(&self, limit_per_table: usize) -> anyhow::Result<Vec<DatabaseTableDump>> {
+    pub fn dump_core_tables(
+        &self,
+        limit_per_table: usize,
+    ) -> anyhow::Result<Vec<DatabaseTableDump>> {
         let tables = [
             "sources",
             "parsed_commands",
@@ -650,7 +642,6 @@ impl CommandSqliteDatabase {
             .map(|table| self.dump_table(table, limit_per_table))
             .collect()
     }
-
 }
 
 pub fn new_record_from_parsed_command(
@@ -706,15 +697,13 @@ fn escape_fts_query(value: &str) -> String {
 }
 
 fn to_sql_json_err(err: serde_json::Error) -> rusqlite::Error {
-    rusqlite::Error::FromSqlConversionFailure(
-        0,
-        rusqlite::types::Type::Text,
-        Box::new(err),
-    )
+    rusqlite::Error::FromSqlConversionFailure(0, rusqlite::types::Type::Text, Box::new(err))
 }
 
-
-fn sqlite_value_to_json(row: &rusqlite::Row<'_>, index: usize) -> rusqlite::Result<serde_json::Value> {
+fn sqlite_value_to_json(
+    row: &rusqlite::Row<'_>,
+    index: usize,
+) -> rusqlite::Result<serde_json::Value> {
     use rusqlite::types::ValueRef;
 
     match row.get_ref(index)? {
@@ -735,4 +724,3 @@ fn sqlite_value_to_json(row: &rusqlite::Row<'_>, index: usize) -> rusqlite::Resu
         })),
     }
 }
-

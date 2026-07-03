@@ -77,4 +77,14 @@ pub struct ParsedCommand {
     pub boundary_kind: BoundaryKind,
     pub span: TextSpan,
     pub source_trace: String,
+    #[serde(default)]
+    pub parent_id: Option<String>,
+    #[serde(default)]
+    pub child_ids: Vec<String>,
+    #[serde(default)]
+    pub hierarchy_path: Vec<String>,
+    #[serde(default)]
+    pub heading_context: Vec<String>,
+    #[serde(default)]
+    pub list_context: Option<String>,
 }

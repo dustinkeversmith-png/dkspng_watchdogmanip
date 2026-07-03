@@ -44,14 +44,40 @@ pub enum HistoryEventType {
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(tag = "kind")]
 pub enum HistoryTarget {
-    File { path: PathBuf, line: Option<u32>, column: Option<u32> },
-    Folder { path: PathBuf },
-    Command { shell: String, command: String, cwd: Option<PathBuf>, exit_code: Option<i32> },
-    Window { title: String, app_name: Option<String>, process_name: Option<String> },
-    Workspace { name: String, root_path: Option<PathBuf> },
-    Alias { name: String, resolved_to: String },
-    Search { query: String, scope: Option<String> },
-    Unknown { label: String },
+    File {
+        path: PathBuf,
+        line: Option<u32>,
+        column: Option<u32>,
+    },
+    Folder {
+        path: PathBuf,
+    },
+    Command {
+        shell: String,
+        command: String,
+        cwd: Option<PathBuf>,
+        exit_code: Option<i32>,
+    },
+    Window {
+        title: String,
+        app_name: Option<String>,
+        process_name: Option<String>,
+    },
+    Workspace {
+        name: String,
+        root_path: Option<PathBuf>,
+    },
+    Alias {
+        name: String,
+        resolved_to: String,
+    },
+    Search {
+        query: String,
+        scope: Option<String>,
+    },
+    Unknown {
+        label: String,
+    },
 }
 
 impl HistoryTarget {
@@ -59,18 +85,46 @@ impl HistoryTarget {
         match self {
             HistoryTarget::File { path, .. } => format!("file:{}", path.display()),
             HistoryTarget::Folder { path } => format!("folder:{}", path.display()),
-            HistoryTarget::Command { shell, command, cwd, .. } => {
-                let cwd = cwd.as_ref().map(|p| p.display().to_string()).unwrap_or_default();
+            HistoryTarget::Command {
+                shell,
+                command,
+                cwd,
+                ..
+            } => {
+                let cwd = cwd
+                    .as_ref()
+                    .map(|p| p.display().to_string())
+                    .unwrap_or_default();
                 format!("command:{}:{}:{}", shell, cwd, command)
             }
-            HistoryTarget::Window { title, app_name, process_name } => {
-                format!("window:{}:{}:{}", app_name.clone().unwrap_or_default(), process_name.clone().unwrap_or_default(), title)
+            HistoryTarget::Window {
+                title,
+                app_name,
+                process_name,
+            } => {
+                format!(
+                    "window:{}:{}:{}",
+                    app_name.clone().unwrap_or_default(),
+                    process_name.clone().unwrap_or_default(),
+                    title
+                )
             }
             HistoryTarget::Workspace { name, root_path } => {
-                format!("workspace:{}:{}", name, root_path.as_ref().map(|p| p.display().to_string()).unwrap_or_default())
+                format!(
+                    "workspace:{}:{}",
+                    name,
+                    root_path
+                        .as_ref()
+                        .map(|p| p.display().to_string())
+                        .unwrap_or_default()
+                )
             }
-            HistoryTarget::Alias { name, resolved_to } => format!("alias:{}->{}", name, resolved_to),
-            HistoryTarget::Search { query, scope } => format!("search:{}:{}", scope.clone().unwrap_or_default(), query),
+            HistoryTarget::Alias { name, resolved_to } => {
+                format!("alias:{}->{}", name, resolved_to)
+            }
+            HistoryTarget::Search { query, scope } => {
+                format!("search:{}:{}", scope.clone().unwrap_or_default(), query)
+            }
             HistoryTarget::Unknown { label } => format!("unknown:{}", label),
         }
     }

@@ -7,10 +7,26 @@ pub struct CommandSpec {
     pub kind: CommandKind,
     pub canonical: String,
     pub aliases: Vec<String>,
-    pub expected_parameters: Vec<String>,
-    pub expected_members: Vec<String>,
+    pub optional_parameters: Vec<String>,
+    pub optional_members: Vec<String>,
+    pub required_members: Vec<String>,
+    pub accepted_layouts: Vec<CommandLayoutKind>,
     pub boundary: BoundaryKind,
     pub allow_loose_body: bool,
+    /// Backward-compatible alias for optional_parameters.
+    pub expected_parameters: Vec<String>,
+    /// Backward-compatible alias for optional_members.
+    pub expected_members: Vec<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum CommandLayoutKind {
+    Inline,
+    Block,
+    HeadingSection,
+    ListItem,
+    KeyValue,
+    Prose,
 }
 
 #[derive(Debug, Clone, Default)]
@@ -288,13 +304,19 @@ fn spec(
     members: &[&str],
     boundary: BoundaryKind,
 ) -> CommandSpec {
+    let optional_parameters: Vec<String> = params.iter().map(|s| s.to_string()).collect();
+    let optional_members: Vec<String> = members.iter().map(|s| s.to_string()).collect();
     CommandSpec {
         kind,
         canonical: canonical.to_string(),
         aliases: aliases.iter().map(|s| s.to_string()).collect(),
-        expected_parameters: params.iter().map(|s| s.to_string()).collect(),
-        expected_members: members.iter().map(|s| s.to_string()).collect(),
+        optional_parameters: optional_parameters.clone(),
+        optional_members: optional_members.clone(),
+        required_members: Vec::new(),
+        accepted_layouts: vec![CommandLayoutKind::Block, CommandLayoutKind::Inline],
         boundary,
         allow_loose_body: true,
+        expected_parameters: optional_parameters,
+        expected_members: optional_members,
     }
 }

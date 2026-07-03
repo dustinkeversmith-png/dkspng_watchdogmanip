@@ -86,10 +86,19 @@ pub enum NavigationTarget {
 
 impl NavigationTarget {
     pub fn file(path: impl Into<PathBuf>) -> Self {
-        Self::File(FileTarget { path: path.into(), line: None, column: None, marker: None, open_mode: OpenMode::Default })
+        Self::File(FileTarget {
+            path: path.into(),
+            line: None,
+            column: None,
+            marker: None,
+            open_mode: OpenMode::Default,
+        })
     }
 
     pub fn folder(path: impl Into<PathBuf>) -> Self {
-        Self::Folder(FolderTarget { path: path.into(), open_mode: OpenMode::Explorer })
+        Self::Folder(FolderTarget {
+            path: path.into(),
+            open_mode: OpenMode::Explorer,
+        })
     }
 }

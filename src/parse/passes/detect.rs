@@ -7,8 +7,10 @@ use crate::parse::{
 };
 
 static AT_COMMAND: Lazy<Regex> = Lazy::new(|| {
-    Regex::new(r"(?x)^\s*(?P<chain>(?:@[A-Za-z][A-Za-z0-9_/-]*(?:\s+|$))+)(?P<payload>.*)$")
-        .unwrap()
+    Regex::new(
+        r"(?x)^\s*(?:\d+[.)]\s*)?(?P<chain>(?:@[A-Za-z][A-Za-z0-9_/-]*(?:\s+|$))+)(?P<payload>.*)$",
+    )
+    .unwrap()
 });
 static HASH_HEADING: Lazy<Regex> =
     Lazy::new(|| Regex::new(r"^\s*#{1,6}\s+(?P<title>.+)$").unwrap());

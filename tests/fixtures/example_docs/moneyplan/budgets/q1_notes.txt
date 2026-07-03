@@ -1,0 +1,5 @@
+@Task Track recurring expenses (building)
+
+@Thought maybe split dining vs transport #budget
+
+@Reference ./selected/planning_scratch.txt

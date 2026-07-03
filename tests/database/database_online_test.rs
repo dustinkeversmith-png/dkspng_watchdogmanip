@@ -75,7 +75,9 @@ fn sqlite_database_insert_get_and_search_round_trip() {
     assert_eq!(stored.kind, CommandKind::Task);
     assert_eq!(stored.title.as_deref(), Some("Boundary Solver"));
     assert!(stored.tags.contains(&"parser".to_string()));
-    assert!(stored.references.contains(&"./src/parse/parser.rs".to_string()));
+    assert!(stored
+        .references
+        .contains(&"./src/parse/parser.rs".to_string()));
 
     let hits = db
         .search(CommandSearchOptions {

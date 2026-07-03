@@ -9,18 +9,28 @@ use macro_os_engines::test_logging::{
 use macro_os_engines::walk::{TreeWalker, TreeWalkerConfig};
 use serde_json::json;
 use std::collections::BTreeSet;
+use std::env;
 use std::fs;
+use std::path::PathBuf;
 use std::time::{SystemTime, UNIX_EPOCH};
 use tempfile::tempdir;
 
 #[test]
 fn logged_real_path_walk_macropipeline_database_efficacy() {
-    let root = "C:\\Users\\Cutie Magic 500\\Desktop\\desktop_temp_docs";
+    let root = env::var("PARSE_TEST_ROOT")
+        .unwrap_or_else(|_| "C:\\Users\\Cutie Magic 500\\Desktop\\desktop_temp_docs".to_string());
+    let root_path = PathBuf::from(&root);
+    if !root_path.exists() {
+        eprintln!("skipping real-path test: PARSE_TEST_ROOT does not exist ({root})");
+        return;
+    }
 
-    let log_dir = "C:\\Users\\Cutie Magic 500\\Desktop\\desktop_temp_docs\\log";
+    let log_dir = env::var("PARSE_TEST_LOG_DIR")
+        .map(PathBuf::from)
+        .unwrap_or_else(|_| PathBuf::from("target/test-logs/parse"));
 
     let walker = TreeWalker::new(
-        TreeWalkerConfig::new(&root)
+        TreeWalkerConfig::new(&root_path)
             .recursive(true)
             .include_extensions(["md", "txt", "rs"])
             .ignore_dirs(["target", ".git", "node_modules", "dist", "build"]),
@@ -55,7 +65,12 @@ fn logged_real_path_walk_macropipeline_database_efficacy() {
         total_files_seen: walked.files.len(),
         included_files: walked.files.len(),
         skipped_files: 0,
-        max_depth_seen: walked.files.iter().map(|file| file.depth).max().unwrap_or(0),
+        max_depth_seen: walked
+            .files
+            .iter()
+            .map(|file| file.depth)
+            .max()
+            .unwrap_or(0),
         extensions_seen,
     };
 
@@ -76,12 +91,18 @@ fn logged_real_path_walk_macropipeline_database_efficacy() {
 
         let output = pipeline.parse(file.source_name.clone(), text);
 
+        let error_count = output
+            .diagnostics
+            .iter()
+            .filter(|d| matches!(d.severity, macro_os_engines::parse::Severity::Error))
+            .count();
+
         parse_file_records.push(ParseFileLogRecord {
             source_name: file.source_name.clone(),
             file_path: file.path.clone(),
             command_count: output.commands.len(),
             warning_count: output.diagnostics.len(),
-            error_count: 0,
+            error_count,
         });
 
         for parsed_command in output.commands {
@@ -166,7 +187,7 @@ fn logged_real_path_walk_macropipeline_database_efficacy() {
         run_ref: String::new(),
         test_name: "logged_real_path_walk_macropipeline_database_efficacy".to_string(),
         started_at_unix_ms: now_unix_ms(),
-        root_path: Some(root.into()),
+        root_path: Some(root_path.clone()),
         temporary_sqlite_db_path: Some(db_path.clone()),
         log_kind: "real_path_walk_parse_database_efficacy".to_string(),
     });
@@ -183,7 +204,7 @@ fn logged_real_path_walk_macropipeline_database_efficacy() {
     let document = output.build();
 
     let writer = TestOutputWriter::new(
-        log_dir,
+        &log_dir,
         "logged_real_path_walk_macropipeline_database_efficacy",
     )
     .expect("output writer should initialize");
@@ -195,8 +216,14 @@ fn logged_real_path_walk_macropipeline_database_efficacy() {
     println!("test log written to: {}", log_path.display());
     println!("temporary sqlite db path: {}", db_path.display());
     println!("walked files: {}", document.summary.file_count);
-    println!("pipeline parsed commands: {}", document.summary.parsed_command_count);
-    println!("inserted commands: {}", document.summary.inserted_command_count);
+    println!(
+        "pipeline parsed commands: {}",
+        document.summary.parsed_command_count
+    );
+    println!(
+        "inserted commands: {}",
+        document.summary.inserted_command_count
+    );
     println!("database stats: {:#?}", document.sections.database.stats);
     println!("diagnostics: {}", document.summary.diagnostic_count);
 

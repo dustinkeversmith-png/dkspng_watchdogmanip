@@ -25,7 +25,10 @@ impl WatchdogPlanner {
         Ok(planned)
     }
 
-    pub fn expand_routine_actions(spec: &WatchSpec, planned: &[PlannedAction]) -> Vec<PlannedAction> {
+    pub fn expand_routine_actions(
+        spec: &WatchSpec,
+        planned: &[PlannedAction],
+    ) -> Vec<PlannedAction> {
         let mut expanded = Vec::new();
         for action in planned {
             expanded.push(action.clone());
@@ -49,11 +52,24 @@ impl WatchdogPlanner {
 
 fn routine_step_to_action(step: &RoutineStep) -> WatchAction {
     match step {
-        RoutineStep::RunCommand { command, cwd } => WatchAction::RunCommand { command: command.clone(), cwd: cwd.clone() },
-        RoutineStep::ReindexContext { context_id } => WatchAction::ReindexContext { context_id: context_id.clone() },
-        RoutineStep::ScanFiles { root } => WatchAction::WriteLog { message: format!("scan files under {}", root.display()) },
-        RoutineStep::ParseMacros { files } => WatchAction::WriteLog { message: format!("parse macros in {} files", files.len()) },
-        RoutineStep::RefreshAliases { context_id } => WatchAction::RefreshAliases { context_id: context_id.clone() },
-        RoutineStep::EmitEvent { event_type } => WatchAction::EmitHistoryEvent { event_type: event_type.clone() },
+        RoutineStep::RunCommand { command, cwd } => WatchAction::RunCommand {
+            command: command.clone(),
+            cwd: cwd.clone(),
+        },
+        RoutineStep::ReindexContext { context_id } => WatchAction::ReindexContext {
+            context_id: context_id.clone(),
+        },
+        RoutineStep::ScanFiles { root } => WatchAction::WriteLog {
+            message: format!("scan files under {}", root.display()),
+        },
+        RoutineStep::ParseMacros { files } => WatchAction::WriteLog {
+            message: format!("parse macros in {} files", files.len()),
+        },
+        RoutineStep::RefreshAliases { context_id } => WatchAction::RefreshAliases {
+            context_id: context_id.clone(),
+        },
+        RoutineStep::EmitEvent { event_type } => WatchAction::EmitHistoryEvent {
+            event_type: event_type.clone(),
+        },
     }
 }

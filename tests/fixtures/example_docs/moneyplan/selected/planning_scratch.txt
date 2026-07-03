@@ -1,0 +1,5 @@
+@Idea use @prev context when switching between planner and moneyplan
+
+@Task Normalize inconsistent @Task: headings
+
+@filepath ./moneyplan/README.md

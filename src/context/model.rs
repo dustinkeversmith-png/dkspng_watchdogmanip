@@ -29,7 +29,11 @@ impl Default for ContextRules {
     fn default() -> Self {
         Self {
             include: vec!["**/*".to_string()],
-            exclude: vec!["target/**".to_string(), ".git/**".to_string(), "node_modules/**".to_string()],
+            exclude: vec![
+                "target/**".to_string(),
+                ".git/**".to_string(),
+                "node_modules/**".to_string(),
+            ],
         }
     }
 }
@@ -37,14 +41,36 @@ impl Default for ContextRules {
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(tag = "type", rename_all = "snake_case")]
 pub enum AliasTargetRef {
-    File { path: PathBuf, line: Option<u32>, column: Option<u32>, marker: Option<String> },
-    Folder { path: PathBuf },
-    Symbol { name: String, kind: Option<String> },
-    Context { context_id: String },
-    Workspace { workspace_id: String },
-    Command { command_name: String, args: Vec<String> },
-    Search { query: String, scope: Option<String> },
-    Multi { targets: Vec<AliasTargetRef> },
+    File {
+        path: PathBuf,
+        line: Option<u32>,
+        column: Option<u32>,
+        marker: Option<String>,
+    },
+    Folder {
+        path: PathBuf,
+    },
+    Symbol {
+        name: String,
+        kind: Option<String>,
+    },
+    Context {
+        context_id: String,
+    },
+    Workspace {
+        workspace_id: String,
+    },
+    Command {
+        command_name: String,
+        args: Vec<String>,
+    },
+    Search {
+        query: String,
+        scope: Option<String>,
+    },
+    Multi {
+        targets: Vec<AliasTargetRef>,
+    },
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -116,10 +142,18 @@ pub struct ContextNode {
     pub symbols: Vec<SymbolRecord>,
     #[serde(default)]
     pub metadata: BTreeMap<String, String>,
+    #[serde(default)]
+    pub local_files: Vec<PathBuf>,
+    #[serde(default)]
+    pub local_commands: Vec<String>,
 }
 
 impl ContextNode {
-    pub fn new(id: impl Into<String>, name: impl Into<String>, root_path: impl Into<PathBuf>) -> Self {
+    pub fn new(
+        id: impl Into<String>,
+        name: impl Into<String>,
+        root_path: impl Into<PathBuf>,
+    ) -> Self {
         Self {
             id: id.into(),
             name: name.into(),
@@ -134,6 +168,8 @@ impl ContextNode {
             queues: Vec::new(),
             symbols: Vec::new(),
             metadata: BTreeMap::new(),
+            local_files: Vec::new(),
+            local_commands: Vec::new(),
         }
     }
 
@@ -147,10 +183,20 @@ impl ContextNode {
     }
 
     pub fn add_current(&mut self, title: impl Into<String>) {
-        self.currents.push(CurrentObjective { title: title.into(), details: None, source_path: None });
+        self.currents.push(CurrentObjective {
+            title: title.into(),
+            details: None,
+            source_path: None,
+        });
     }
 
     pub fn add_queue_item(&mut self, title: impl Into<String>, status: Option<String>) {
-        self.queues.push(QueueItem { title: title.into(), details: None, status, priority: None, source_path: None });
+        self.queues.push(QueueItem {
+            title: title.into(),
+            details: None,
+            status,
+            priority: None,
+            source_path: None,
+        });
     }
 }

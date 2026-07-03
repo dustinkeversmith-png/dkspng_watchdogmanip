@@ -24,7 +24,11 @@ pub struct FrequencyIndex {
 impl FrequencyIndex {
     pub fn build(events: &[HistoryEvent], recent_window_days: i64) -> Self {
         let mut stats = BTreeMap::<String, UsageStats>::new();
-        let now = events.iter().map(|e| e.timestamp).max().unwrap_or_else(Utc::now);
+        let now = events
+            .iter()
+            .map(|e| e.timestamp)
+            .max()
+            .unwrap_or_else(Utc::now);
         let recent_cutoff = now - chrono::Duration::days(recent_window_days);
 
         for event in events {
@@ -41,12 +45,25 @@ impl FrequencyIndex {
                 workspace_counts: BTreeMap::new(),
             });
             entry.total_count += 1;
-            if event.timestamp >= recent_cutoff { entry.recent_count += 1; }
-            *entry.event_type_counts.entry(event.event_type.clone()).or_insert(0) += 1;
-            if event.timestamp < entry.first_seen_at { entry.first_seen_at = event.timestamp; }
-            if event.timestamp > entry.last_seen_at { entry.last_seen_at = event.timestamp; }
-            if let Some(ctx) = &event.context_id { *entry.context_counts.entry(ctx.clone()).or_insert(0) += 1; }
-            if let Some(ws) = &event.workspace_id { *entry.workspace_counts.entry(ws.clone()).or_insert(0) += 1; }
+            if event.timestamp >= recent_cutoff {
+                entry.recent_count += 1;
+            }
+            *entry
+                .event_type_counts
+                .entry(event.event_type.clone())
+                .or_insert(0) += 1;
+            if event.timestamp < entry.first_seen_at {
+                entry.first_seen_at = event.timestamp;
+            }
+            if event.timestamp > entry.last_seen_at {
+                entry.last_seen_at = event.timestamp;
+            }
+            if let Some(ctx) = &event.context_id {
+                *entry.context_counts.entry(ctx.clone()).or_insert(0) += 1;
+            }
+            if let Some(ws) = &event.workspace_id {
+                *entry.workspace_counts.entry(ws.clone()).or_insert(0) += 1;
+            }
         }
 
         Self { stats }
@@ -54,7 +71,11 @@ impl FrequencyIndex {
 
     pub fn top(&self, limit: usize) -> Vec<&UsageStats> {
         let mut values: Vec<_> = self.stats.values().collect();
-        values.sort_by(|a, b| b.total_count.cmp(&a.total_count).then_with(|| b.last_seen_at.cmp(&a.last_seen_at)));
+        values.sort_by(|a, b| {
+            b.total_count
+                .cmp(&a.total_count)
+                .then_with(|| b.last_seen_at.cmp(&a.last_seen_at))
+        });
         values.into_iter().take(limit).collect()
     }
 }

@@ -16,8 +16,17 @@ pub struct AliasDefinition {
 }
 
 impl AliasDefinition {
-    pub fn new(scope_id: impl Into<String>, name: impl Into<String>, target: NavigationTarget) -> Self {
-        Self { scope_id: scope_id.into(), name: name.into(), target, description: None }
+    pub fn new(
+        scope_id: impl Into<String>,
+        name: impl Into<String>,
+        target: NavigationTarget,
+    ) -> Self {
+        Self {
+            scope_id: scope_id.into(),
+            name: name.into(),
+            target,
+            description: None,
+        }
     }
 }
 

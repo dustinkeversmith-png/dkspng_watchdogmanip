@@ -22,7 +22,9 @@ pub fn check_sqlite_health(conn: &Connection) -> Result<DatabaseHealthReport> {
     let one: i64 = conn.query_row("SELECT 1", [], |row| row.get(0))?;
 
     if one != 1 {
-        return Err(anyhow!("database health check failed: SELECT 1 did not return 1"));
+        return Err(anyhow!(
+            "database health check failed: SELECT 1 did not return 1"
+        ));
     }
 
     let mut missing_tables = Vec::new();

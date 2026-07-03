@@ -67,8 +67,6 @@ pub struct DatabaseStats {
     pub reference_count: i64,
 }
 
-
-
 use serde_json::Value;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

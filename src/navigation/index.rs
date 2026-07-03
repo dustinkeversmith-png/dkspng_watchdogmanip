@@ -13,7 +13,12 @@ pub struct NavigationIndex {
 
 impl Default for NavigationIndex {
     fn default() -> Self {
-        Self { scopes: BTreeMap::new(), aliases: Vec::new(), symbols: Vec::new(), global_scope_id: "global".to_string() }
+        Self {
+            scopes: BTreeMap::new(),
+            aliases: Vec::new(),
+            symbols: Vec::new(),
+            global_scope_id: "global".to_string(),
+        }
     }
 }
 
@@ -46,22 +51,33 @@ impl NavigationIndex {
             if !seen.insert(id.clone()) {
                 break;
             }
-            let scope = self.scopes.get(&id).ok_or_else(|| NavigationError::ScopeNotFound(id.clone()))?;
+            let scope = self
+                .scopes
+                .get(&id)
+                .ok_or_else(|| NavigationError::ScopeNotFound(id.clone()))?;
             order.push(scope.id.clone());
             cursor = scope.parent_id.clone();
         }
-        if self.scopes.contains_key(&self.global_scope_id) && !order.iter().any(|id| id == &self.global_scope_id) {
+        if self.scopes.contains_key(&self.global_scope_id)
+            && !order.iter().any(|id| id == &self.global_scope_id)
+        {
             order.push(self.global_scope_id.clone());
         }
         Ok(order)
     }
 
     pub fn aliases_in_scope<'a>(&'a self, scope_id: &str, name: &str) -> Vec<&'a AliasDefinition> {
-        self.aliases.iter().filter(|alias| alias.scope_id == scope_id && alias.name.eq_ignore_ascii_case(name)).collect()
+        self.aliases
+            .iter()
+            .filter(|alias| alias.scope_id == scope_id && alias.name.eq_ignore_ascii_case(name))
+            .collect()
     }
 
     pub fn symbols_in_scope<'a>(&'a self, scope_id: &str, name: &str) -> Vec<&'a SymbolDefinition> {
-        self.symbols.iter().filter(|symbol| symbol.scope_id == scope_id && symbol.name.eq_ignore_ascii_case(name)).collect()
+        self.symbols
+            .iter()
+            .filter(|symbol| symbol.scope_id == scope_id && symbol.name.eq_ignore_ascii_case(name))
+            .collect()
     }
 
     pub fn export_json_pretty(&self) -> Result<String> {

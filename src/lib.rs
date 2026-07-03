@@ -12,6 +12,6 @@ pub mod database;
 pub mod history;
 pub mod navigation;
 pub mod parse;
+pub mod test_logging;
 pub mod walk;
 pub mod watchdog;
-pub mod test_logging;

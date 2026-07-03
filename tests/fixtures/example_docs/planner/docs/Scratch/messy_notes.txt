@@ -1,0 +1,7 @@
+Scratch notes only file in this folder.
+
+some prose @current [ fix this later ]
+
+(deffered)
+
+@Idea fold this folder into parent when min_files_per_context is 2

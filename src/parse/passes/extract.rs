@@ -95,6 +95,11 @@ pub fn extract_block(block: &CommandBlock, index: usize) -> ParsedCommand {
         boundary_kind: block.boundary_kind.clone(),
         span: block.span,
         source_trace: format!("lines {}-{}", block.span.line_start, block.span.line_end),
+        parent_id: None,
+        child_ids: Vec::new(),
+        hierarchy_path: Vec::new(),
+        heading_context: Vec::new(),
+        list_context: None,
     }
 }
 

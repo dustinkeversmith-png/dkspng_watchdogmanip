@@ -27,8 +27,12 @@ pub struct WatchSpec {
     pub routines: Vec<Routine>,
 }
 
-fn default_debounce() -> u64 { 500 }
-fn default_enabled() -> bool { true }
+fn default_debounce() -> u64 {
+    500
+}
+fn default_enabled() -> bool {
+    true
+}
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub struct WatchRule {
@@ -66,13 +70,28 @@ pub enum WatchCondition {
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(tag = "kind")]
 pub enum WatchAction {
-    EmitHistoryEvent { event_type: String },
-    ReindexContext { context_id: String },
-    RefreshAliases { context_id: Option<String> },
-    RunCommand { command: String, cwd: Option<PathBuf> },
-    RunRoutine { routine_id: RoutineId },
-    WriteLog { message: String },
-    Notify { message: String },
+    EmitHistoryEvent {
+        event_type: String,
+    },
+    ReindexContext {
+        context_id: String,
+    },
+    RefreshAliases {
+        context_id: Option<String>,
+    },
+    RunCommand {
+        command: String,
+        cwd: Option<PathBuf>,
+    },
+    RunRoutine {
+        routine_id: RoutineId,
+    },
+    WriteLog {
+        message: String,
+    },
+    Notify {
+        message: String,
+    },
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
@@ -86,12 +105,25 @@ pub struct Routine {
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(tag = "kind")]
 pub enum RoutineStep {
-    RunCommand { command: String, cwd: Option<PathBuf> },
-    ReindexContext { context_id: String },
-    ScanFiles { root: PathBuf },
-    ParseMacros { files: Vec<PathBuf> },
-    RefreshAliases { context_id: Option<String> },
-    EmitEvent { event_type: String },
+    RunCommand {
+        command: String,
+        cwd: Option<PathBuf>,
+    },
+    ReindexContext {
+        context_id: String,
+    },
+    ScanFiles {
+        root: PathBuf,
+    },
+    ParseMacros {
+        files: Vec<PathBuf>,
+    },
+    RefreshAliases {
+        context_id: Option<String>,
+    },
+    EmitEvent {
+        event_type: String,
+    },
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]

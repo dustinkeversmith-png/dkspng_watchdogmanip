@@ -1,5 +1,5 @@
-use macro_os_engines::{context, history, navigation, parse, watchdog};
 use history::adapters::{HistoryAdapter, MockHistoryAdapter};
+use macro_os_engines::{context, history, navigation, parse, watchdog};
 
 #[test]
 fn context_index_parses_alias_current_and_queue() {
@@ -34,12 +34,15 @@ fn history_mock_adapter_builds_suggestions() {
     let mut adapter = MockHistoryAdapter::default();
     let events = adapter.collect().unwrap();
     let index = history::FrequencyIndex::build(&events, 14);
-    let suggestions = history::suggest(&index, &history::SuggestionQuery {
-        text: Some("parser".into()),
-        context_id: Some("parser".into()),
-        workspace_id: Some("macro_processor".into()),
-        limit: 5,
-    });
+    let suggestions = history::suggest(
+        &index,
+        &history::SuggestionQuery {
+            text: Some("parser".into()),
+            context_id: Some("parser".into()),
+            workspace_id: Some("macro_processor".into()),
+            limit: 5,
+        },
+    );
     assert!(!suggestions.is_empty());
 }
 
@@ -48,5 +51,7 @@ fn watchdog_fixture_plans_actions() {
     let spec = watchdog::read_watch_spec("examples/watch_spec.json").unwrap();
     let events = watchdog::read_file_events_jsonl("examples/file_events.jsonl").unwrap();
     let planned = watchdog::WatchdogPlanner::plan(&spec, &events).unwrap();
-    assert!(planned.iter().any(|a| a.rule_id == "rule_rs_modified_refresh_parser"));
+    assert!(planned
+        .iter()
+        .any(|a| a.rule_id == "rule_rs_modified_refresh_parser"));
 }

@@ -11,7 +11,11 @@ pub enum NavigationError {
     AliasNotFound(String),
 
     #[error("ambiguous alias '{query}' in scope '{scope}': {candidates:?}")]
-    AmbiguousAlias { query: String, scope: String, candidates: Vec<String> },
+    AmbiguousAlias {
+        query: String,
+        scope: String,
+        candidates: Vec<String>,
+    },
 
     #[error("json error: {0}")]
     Json(#[from] serde_json::Error),

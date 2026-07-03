@@ -1,7 +1,9 @@
+use crate::parse::boundary::solver::solve_command_blocks;
+use crate::parse::hierarchy::resolve_hierarchy;
 use crate::parse::model::{ParseOutput, SourceDocument};
 use crate::parse::passes::{
-    boundary::solve_boundaries, detect::detect_command_seeds, extract::extract_block,
-    infer::infer_loose_objects, normalize::normalize_command, validate::validate_commands,
+    detect::detect_command_seeds, extract::extract_block, infer::infer_loose_objects,
+    normalize::normalize_command, validate::validate_commands,
 };
 use crate::parse::registry::{default_registry, CommandRegistry};
 
@@ -45,9 +47,14 @@ impl MacroPipeline {
             seeds.sort_by_key(|s| s.start_line_index);
         }
         if !self.config.preserve_unknown_commands {
-            seeds.retain(|s| !matches!(s.canonical_kind, crate::parse::model::CommandKind::Unknown(_)));
+            seeds.retain(|s| {
+                !matches!(
+                    s.canonical_kind,
+                    crate::parse::model::CommandKind::Unknown(_)
+                )
+            });
         }
-        let blocks = solve_boundaries(&doc, &seeds);
+        let blocks = solve_command_blocks(&doc, &seeds);
         let mut commands: Vec<_> = blocks
             .iter()
             .enumerate()
@@ -57,10 +64,12 @@ impl MacroPipeline {
             normalize_command(cmd);
         }
         let diagnostics = validate_commands(&commands);
+        let hierarchy = resolve_hierarchy(&doc, &mut commands);
         ParseOutput {
             source_name: doc.source_name,
             commands,
             diagnostics,
+            hierarchy,
         }
     }
 }

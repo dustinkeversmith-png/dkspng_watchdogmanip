@@ -38,7 +38,11 @@ pub struct ResolutionOptions {
 
 impl Default for ResolutionOptions {
     fn default() -> Self {
-        Self { strict_ambiguity: true, fallback_to_symbols: true, fallback_to_search: true }
+        Self {
+            strict_ambiguity: true,
+            fallback_to_symbols: true,
+            fallback_to_search: true,
+        }
     }
 }
 
@@ -49,7 +53,10 @@ pub struct NavigationResolver<'a> {
 
 impl<'a> NavigationResolver<'a> {
     pub fn new(index: &'a NavigationIndex) -> Self {
-        Self { index, options: ResolutionOptions::default() }
+        Self {
+            index,
+            options: ResolutionOptions::default(),
+        }
     }
 
     pub fn with_options(index: &'a NavigationIndex, options: ResolutionOptions) -> Self {
@@ -66,11 +73,17 @@ impl<'a> NavigationResolver<'a> {
                 return Err(NavigationError::AmbiguousAlias {
                     query: query.to_string(),
                     scope: scope.clone(),
-                    candidates: matches.iter().map(|alias| format!("{}:{}", alias.scope_id, alias.name)).collect(),
+                    candidates: matches
+                        .iter()
+                        .map(|alias| format!("{}:{}", alias.scope_id, alias.name))
+                        .collect(),
                 });
             }
             if !matches.is_empty() {
-                return Ok(matches.into_iter().map(|alias| alias.target.clone()).collect());
+                return Ok(matches
+                    .into_iter()
+                    .map(|alias| alias.target.clone())
+                    .collect());
             }
         }
 
@@ -78,13 +91,20 @@ impl<'a> NavigationResolver<'a> {
             for scope in &order {
                 let matches = self.index.symbols_in_scope(scope, query);
                 if !matches.is_empty() {
-                    return Ok(matches.into_iter().map(|symbol| symbol.target.clone()).collect());
+                    return Ok(matches
+                        .into_iter()
+                        .map(|symbol| symbol.target.clone())
+                        .collect());
                 }
             }
         }
 
         if self.options.fallback_to_search {
-            return Ok(vec![NavigationTarget::Search(SearchTarget { query: query.to_string(), scope: Some(scope_id.to_string()), filters: vec![] })]);
+            return Ok(vec![NavigationTarget::Search(SearchTarget {
+                query: query.to_string(),
+                scope: Some(scope_id.to_string()),
+                filters: vec![],
+            })]);
         }
 
         Err(NavigationError::AliasNotFound(query.to_string()))
@@ -93,17 +113,44 @@ impl<'a> NavigationResolver<'a> {
     pub fn plan(&self, request: NavigationRequest) -> Result<NavigationPlan> {
         let scope_order = self.index.scope_order(&request.scope_id)?;
         let resolved_targets = self.resolve(&request.query, &request.scope_id)?;
-        let dry_run_steps = resolved_targets.iter().map(|target| match target {
-            NavigationTarget::File(file) => format!("Open file {:?} at line {:?}, column {:?}, marker {:?}", file.path, file.line, file.column, file.marker),
-            NavigationTarget::Folder(folder) => format!("Open folder {:?}", folder.path),
-            NavigationTarget::Symbol(symbol) => format!("Jump to symbol {} in {:?}", symbol.name, symbol.source_path),
-            NavigationTarget::Context(ctx) => format!("Open context {} at {:?}", ctx.context_id, ctx.root_path),
-            NavigationTarget::Workspace(ws) => format!("Open workspace {} with {} files and {} folders", ws.workspace_id, ws.files.len(), ws.folders.len()),
-            NavigationTarget::Command(cmd) => format!("Run command {} with args {:?}", cmd.command_name, cmd.args),
-            NavigationTarget::Search(search) => format!("Search {:?} in scope {:?}", search.query, search.scope),
-            NavigationTarget::Multi { targets } => format!("Resolve multi target with {} entries", targets.len()),
-        }).collect();
+        let dry_run_steps = resolved_targets
+            .iter()
+            .map(|target| match target {
+                NavigationTarget::File(file) => format!(
+                    "Open file {:?} at line {:?}, column {:?}, marker {:?}",
+                    file.path, file.line, file.column, file.marker
+                ),
+                NavigationTarget::Folder(folder) => format!("Open folder {:?}", folder.path),
+                NavigationTarget::Symbol(symbol) => {
+                    format!("Jump to symbol {} in {:?}", symbol.name, symbol.source_path)
+                }
+                NavigationTarget::Context(ctx) => {
+                    format!("Open context {} at {:?}", ctx.context_id, ctx.root_path)
+                }
+                NavigationTarget::Workspace(ws) => format!(
+                    "Open workspace {} with {} files and {} folders",
+                    ws.workspace_id,
+                    ws.files.len(),
+                    ws.folders.len()
+                ),
+                NavigationTarget::Command(cmd) => {
+                    format!("Run command {} with args {:?}", cmd.command_name, cmd.args)
+                }
+                NavigationTarget::Search(search) => {
+                    format!("Search {:?} in scope {:?}", search.query, search.scope)
+                }
+                NavigationTarget::Multi { targets } => {
+                    format!("Resolve multi target with {} entries", targets.len())
+                }
+            })
+            .collect();
 
-        Ok(NavigationPlan { request, scope_order, resolved_targets, dry_run_steps, warnings: Vec::new() })
+        Ok(NavigationPlan {
+            request,
+            scope_order,
+            resolved_targets,
+            dry_run_steps,
+            warnings: Vec::new(),
+        })
     }
 }

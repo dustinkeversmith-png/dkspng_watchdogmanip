@@ -29,14 +29,21 @@ impl Default for FileTreeContextOptions {
             root_name: "project".to_string(),
             inheritance: InheritancePolicy::Ancestors,
             include: vec!["**".to_string()],
-            exclude: vec!["target/**".to_string(), ".git/**".to_string(), "node_modules/**".to_string()],
+            exclude: vec![
+                "target/**".to_string(),
+                ".git/**".to_string(),
+                "node_modules/**".to_string(),
+            ],
             create_context_for_root: true,
         }
     }
 }
 
 /// Build a ContextIndex by recursively walking a folder tree.
-pub fn build_contexts_from_file_tree(root: impl AsRef<Path>, options: FileTreeContextOptions) -> Result<ContextIndex> {
+pub fn build_contexts_from_file_tree(
+    root: impl AsRef<Path>,
+    options: FileTreeContextOptions,
+) -> Result<ContextIndex> {
     let root = root.as_ref().to_path_buf();
     let include = build_globset(&options.include)?;
     let exclude = build_globset(&options.exclude)?;
@@ -45,13 +52,28 @@ pub fn build_contexts_from_file_tree(root: impl AsRef<Path>, options: FileTreeCo
     if options.create_context_for_root {
         let mut root_ctx = ContextNode::new(&options.root_context_id, &options.root_name, &root);
         root_ctx.inheritance = options.inheritance.clone();
-        root_ctx.rules = ContextRules { include: options.include.clone(), exclude: options.exclude.clone() };
-        root_ctx.metadata.insert("local_context".to_string(), "true".to_string());
-        root_ctx.metadata.insert("generated_from_file_tree".to_string(), "true".to_string());
+        root_ctx.rules = ContextRules {
+            include: options.include.clone(),
+            exclude: options.exclude.clone(),
+        };
+        root_ctx
+            .metadata
+            .insert("local_context".to_string(), "true".to_string());
+        root_ctx
+            .metadata
+            .insert("generated_from_file_tree".to_string(), "true".to_string());
         index.upsert_context(root_ctx);
     }
 
-    walk_dir(&root, &root, &options.root_context_id, &options, &include, &exclude, &mut index)?;
+    walk_dir(
+        &root,
+        &root,
+        &options.root_context_id,
+        &options,
+        &include,
+        &exclude,
+        &mut index,
+    )?;
     Ok(index)
 }
 
@@ -73,18 +95,40 @@ fn walk_dir(
         if !path.is_dir() {
             continue;
         }
+
+        let dir_name = path
+            .file_name()
+            .and_then(|name| name.to_str())
+            .unwrap_or_default();
+        if is_ignored_dir_name(dir_name) {
+            continue;
+        }
+
         let rel = path.strip_prefix(root).unwrap_or(&path);
         if !path_allowed(rel, include, exclude) {
             continue;
         }
 
         let context_id = context_id_for_relative(&options.root_context_id, rel);
-        let mut ctx = ContextNode::new(&context_id, rel.file_name().and_then(|s| s.to_str()).unwrap_or(&context_id), &path)
-            .with_parent(parent_context_id.to_string());
+        let mut ctx = ContextNode::new(
+            &context_id,
+            rel.file_name()
+                .and_then(|s| s.to_str())
+                .unwrap_or(&context_id),
+            &path,
+        )
+        .with_parent(parent_context_id.to_string());
         ctx.inheritance = options.inheritance.clone();
-        ctx.rules = ContextRules { include: options.include.clone(), exclude: options.exclude.clone() };
-        ctx.metadata.insert("local_context".to_string(), "true".to_string());
-        ctx.metadata.insert("relative_path".to_string(), rel.to_string_lossy().to_string());
+        ctx.rules = ContextRules {
+            include: options.include.clone(),
+            exclude: options.exclude.clone(),
+        };
+        ctx.metadata
+            .insert("local_context".to_string(), "true".to_string());
+        ctx.metadata.insert(
+            "relative_path".to_string(),
+            rel.to_string_lossy().to_string(),
+        );
         index.upsert_context(ctx);
 
         walk_dir(root, &path, &context_id, options, include, exclude, index)?;
@@ -133,8 +177,21 @@ fn context_id_for_relative(root_context_id: &str, rel: &Path) -> String {
 fn slug(value: &str) -> String {
     value
         .chars()
-        .map(|c| if c.is_ascii_alphanumeric() { c.to_ascii_lowercase() } else { '_' })
+        .map(|c| {
+            if c.is_ascii_alphanumeric() {
+                c.to_ascii_lowercase()
+            } else {
+                '_'
+            }
+        })
         .collect::<String>()
         .trim_matches('_')
         .to_string()
+}
+
+fn is_ignored_dir_name(name: &str) -> bool {
+    matches!(
+        name,
+        "target" | ".git" | "node_modules" | "dist" | "build" | ".expo"
+    )
 }

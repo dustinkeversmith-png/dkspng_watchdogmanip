@@ -1,12 +1,14 @@
 use anyhow::Result;
 use clap::{Parser, Subcommand};
+use history::adapters::{HistoryAdapter, MockHistoryAdapter};
 use macro_os_engines::{context, history, navigation, parse, watchdog};
 use std::{fs, path::PathBuf};
-use history::adapters::{HistoryAdapter, MockHistoryAdapter};
 
 #[derive(Debug, Parser)]
 #[command(name = "macro-os")]
-#[command(about = "Unified modular CLI for parse, context, navigation, history, and watchdog engines")]
+#[command(
+    about = "Unified modular CLI for parse, context, navigation, history, and watchdog engines"
+)]
 struct Cli {
     #[command(subcommand)]
     engine: EngineCommand,
@@ -38,9 +40,20 @@ struct ContextCommand {
 
 #[derive(Debug, Subcommand)]
 enum ContextSubcommand {
-    Index { file: PathBuf, #[arg(long, default_value = "project")] default_context: String },
-    Tree { file: PathBuf, #[arg(long, default_value = "project")] root: String },
-    Inspect { file: PathBuf, context: String },
+    Index {
+        file: PathBuf,
+        #[arg(long, default_value = "project")]
+        default_context: String,
+    },
+    Tree {
+        file: PathBuf,
+        #[arg(long, default_value = "project")]
+        root: String,
+    },
+    Inspect {
+        file: PathBuf,
+        context: String,
+    },
 }
 
 #[derive(Debug, Parser)]
@@ -52,8 +65,22 @@ struct NavCommand {
 #[derive(Debug, Subcommand)]
 enum NavSubcommand {
     Mock,
-    Resolve { query: String, #[arg(long, default_value = "project")] scope: String, #[arg(long)] index_file: Option<PathBuf> },
-    Plan { query: String, #[arg(long, default_value = "project")] scope: String, #[arg(long, default_value = "resolve")] action: String, #[arg(long)] index_file: Option<PathBuf> },
+    Resolve {
+        query: String,
+        #[arg(long, default_value = "project")]
+        scope: String,
+        #[arg(long)]
+        index_file: Option<PathBuf>,
+    },
+    Plan {
+        query: String,
+        #[arg(long, default_value = "project")]
+        scope: String,
+        #[arg(long, default_value = "resolve")]
+        action: String,
+        #[arg(long)]
+        index_file: Option<PathBuf>,
+    },
 }
 
 #[derive(Debug, Parser)]
@@ -64,10 +91,28 @@ struct HistoryCommand {
 
 #[derive(Debug, Subcommand)]
 enum HistorySubcommand {
-    Mock { #[arg(long, default_value = ".macro/history.jsonl")] out: PathBuf },
-    Stats { input: PathBuf, #[arg(long, default_value_t = 10)] limit: usize },
-    Suggest { input: PathBuf, text: Option<String>, #[arg(long)] context: Option<String>, #[arg(long)] workspace: Option<String>, #[arg(long, default_value_t = 10)] limit: usize },
-    Print { input: PathBuf },
+    Mock {
+        #[arg(long, default_value = ".macro/history.jsonl")]
+        out: PathBuf,
+    },
+    Stats {
+        input: PathBuf,
+        #[arg(long, default_value_t = 10)]
+        limit: usize,
+    },
+    Suggest {
+        input: PathBuf,
+        text: Option<String>,
+        #[arg(long)]
+        context: Option<String>,
+        #[arg(long)]
+        workspace: Option<String>,
+        #[arg(long, default_value_t = 10)]
+        limit: usize,
+    },
+    Print {
+        input: PathBuf,
+    },
 }
 
 #[derive(Debug, Parser)]
@@ -78,9 +123,18 @@ struct WatchdogCommand {
 
 #[derive(Debug, Subcommand)]
 enum WatchdogSubcommand {
-    Validate { spec: PathBuf },
-    ListRules { spec: PathBuf },
-    Simulate { spec: PathBuf, events: PathBuf, #[arg(long)] expand_routines: bool },
+    Validate {
+        spec: PathBuf,
+    },
+    ListRules {
+        spec: PathBuf,
+    },
+    Simulate {
+        spec: PathBuf,
+        events: PathBuf,
+        #[arg(long)]
+        expand_routines: bool,
+    },
 }
 
 fn main() -> Result<()> {
@@ -98,35 +152,70 @@ fn run_parse(args: ParseCommand) -> Result<()> {
     let text = fs::read_to_string(&args.input)?;
     let pipeline = parse::MacroPipeline::default();
     let parsed = pipeline.parse(args.input.display().to_string(), text);
-    let json = if args.pretty { serde_json::to_string_pretty(&parsed)? } else { serde_json::to_string(&parsed)? };
-    if let Some(path) = args.output { fs::write(path, json)?; } else { println!("{}", json); }
+    let json = if args.pretty {
+        serde_json::to_string_pretty(&parsed)?
+    } else {
+        serde_json::to_string(&parsed)?
+    };
+    if let Some(path) = args.output {
+        fs::write(path, json)?;
+    } else {
+        println!("{}", json);
+    }
     Ok(())
 }
 
 fn run_context(args: ContextCommand) -> Result<()> {
     match args.command {
-        ContextSubcommand::Index { file, default_context } => {
+        ContextSubcommand::Index {
+            file,
+            default_context,
+        } => {
             let input = fs::read_to_string(file)?;
-            let index = context::build_index_from_document(&input, context::ParseConfig { default_context_id: default_context })?;
+            let index = context::build_index_from_document(
+                &input,
+                context::ParseConfig {
+                    default_context_id: default_context,
+                },
+            )?;
             println!("{}", index.export_json_pretty()?);
         }
         ContextSubcommand::Tree { file, root } => {
             let input = fs::read_to_string(file)?;
-            let index = context::build_index_from_document(&input, context::ParseConfig::default())?;
-            println!("{}", serde_json::to_string_pretty(&index.tree_from(&root)?)?);
+            let index =
+                context::build_index_from_document(&input, context::ParseConfig::default())?;
+            println!(
+                "{}",
+                serde_json::to_string_pretty(&index.tree_from(&root)?)?
+            );
         }
-        ContextSubcommand::Inspect { file, context: context_id } => {
+        ContextSubcommand::Inspect {
+            file,
+            context: context_id,
+        } => {
             let input = fs::read_to_string(file)?;
-            let index = context::build_index_from_document(&input, context::ParseConfig::default())?;
+            let index =
+                context::build_index_from_document(&input, context::ParseConfig::default())?;
             let lookup_order = index.context_lookup_order(&context_id)?;
-            let aliases = index.aliases_visible_from(&context_id)?.into_iter().map(|(ctx, alias)| format!("{ctx}:{}", alias.name)).collect::<Vec<_>>();
-            let symbols = index.symbols_visible_from(&context_id)?.into_iter().map(|(ctx, symbol)| format!("{ctx}:{}:{}", symbol.kind, symbol.name)).collect::<Vec<_>>();
-            println!("{}", serde_json::to_string_pretty(&serde_json::json!({
-                "context": context_id,
-                "lookup_order": lookup_order,
-                "visible_aliases": aliases,
-                "visible_symbols": symbols
-            }))?);
+            let aliases = index
+                .aliases_visible_from(&context_id)?
+                .into_iter()
+                .map(|(ctx, alias)| format!("{ctx}:{}", alias.name))
+                .collect::<Vec<_>>();
+            let symbols = index
+                .symbols_visible_from(&context_id)?
+                .into_iter()
+                .map(|(ctx, symbol)| format!("{ctx}:{}:{}", symbol.kind, symbol.name))
+                .collect::<Vec<_>>();
+            println!(
+                "{}",
+                serde_json::to_string_pretty(&serde_json::json!({
+                    "context": context_id,
+                    "lookup_order": lookup_order,
+                    "visible_aliases": aliases,
+                    "visible_symbols": symbols
+                }))?
+            );
         }
     }
     Ok(())
@@ -134,16 +223,35 @@ fn run_context(args: ContextCommand) -> Result<()> {
 
 fn run_nav(args: NavCommand) -> Result<()> {
     match args.command {
-        NavSubcommand::Mock => println!("{}", navigation::mock_navigation_index().export_json_pretty()?),
-        NavSubcommand::Resolve { query, scope, index_file } => {
+        NavSubcommand::Mock => println!(
+            "{}",
+            navigation::mock_navigation_index().export_json_pretty()?
+        ),
+        NavSubcommand::Resolve {
+            query,
+            scope,
+            index_file,
+        } => {
             let index = load_nav_index(index_file)?;
             let resolver = navigation::NavigationResolver::new(&index);
-            println!("{}", serde_json::to_string_pretty(&resolver.resolve(&query, &scope)?)?);
+            println!(
+                "{}",
+                serde_json::to_string_pretty(&resolver.resolve(&query, &scope)?)?
+            );
         }
-        NavSubcommand::Plan { query, scope, action, index_file } => {
+        NavSubcommand::Plan {
+            query,
+            scope,
+            action,
+            index_file,
+        } => {
             let index = load_nav_index(index_file)?;
             let resolver = navigation::NavigationResolver::new(&index);
-            let plan = resolver.plan(navigation::NavigationRequest { action: parse_nav_action(&action), query, scope_id: scope })?;
+            let plan = resolver.plan(navigation::NavigationRequest {
+                action: parse_nav_action(&action),
+                query,
+                scope_id: scope,
+            })?;
             println!("{}", serde_json::to_string_pretty(&plan)?);
         }
     }
@@ -152,7 +260,7 @@ fn run_nav(args: NavCommand) -> Result<()> {
 
 fn load_nav_index(path: Option<PathBuf>) -> navigation::Result<navigation::NavigationIndex> {
     match path {
-        Some(path) => navigation::NavigationIndex::import_json(&fs::read_to_string(path)?) ,
+        Some(path) => navigation::NavigationIndex::import_json(&fs::read_to_string(path)?),
         None => Ok(navigation::mock_navigation_index()),
     }
 }
@@ -180,10 +288,24 @@ fn run_history(args: HistoryCommand) -> Result<()> {
             let index = history::FrequencyIndex::build(&events, 14);
             println!("{}", serde_json::to_string_pretty(&index.top(limit))?);
         }
-        HistorySubcommand::Suggest { input, text, context, workspace, limit } => {
+        HistorySubcommand::Suggest {
+            input,
+            text,
+            context,
+            workspace,
+            limit,
+        } => {
             let events = history::read_jsonl_events(&input)?;
             let index = history::FrequencyIndex::build(&events, 14);
-            let results = history::suggest(&index, &history::SuggestionQuery { text, context_id: context, workspace_id: workspace, limit });
+            let results = history::suggest(
+                &index,
+                &history::SuggestionQuery {
+                    text,
+                    context_id: context,
+                    workspace_id: workspace,
+                    limit,
+                },
+            );
             println!("{}", serde_json::to_string_pretty(&results)?);
         }
         HistorySubcommand::Print { input } => {
@@ -198,17 +320,30 @@ fn run_watchdog(args: WatchdogCommand) -> Result<()> {
     match args.command {
         WatchdogSubcommand::Validate { spec } => {
             let spec = watchdog::read_watch_spec(&spec)?;
-            println!("valid watch spec: {} with {} rules and {} routines", spec.name, spec.rules.len(), spec.routines.len());
+            println!(
+                "valid watch spec: {} with {} rules and {} routines",
+                spec.name,
+                spec.rules.len(),
+                spec.routines.len()
+            );
         }
         WatchdogSubcommand::ListRules { spec } => {
             let spec = watchdog::read_watch_spec(&spec)?;
             println!("{}", serde_json::to_string_pretty(&spec.rules)?);
         }
-        WatchdogSubcommand::Simulate { spec, events, expand_routines } => {
+        WatchdogSubcommand::Simulate {
+            spec,
+            events,
+            expand_routines,
+        } => {
             let spec = watchdog::read_watch_spec(&spec)?;
             let events = watchdog::read_file_events_jsonl(&events)?;
             let planned = watchdog::WatchdogPlanner::plan(&spec, &events)?;
-            let planned = if expand_routines { watchdog::WatchdogPlanner::expand_routine_actions(&spec, &planned) } else { planned };
+            let planned = if expand_routines {
+                watchdog::WatchdogPlanner::expand_routine_actions(&spec, &planned)
+            } else {
+                planned
+            };
             println!("{}", serde_json::to_string_pretty(&planned)?);
         }
     }

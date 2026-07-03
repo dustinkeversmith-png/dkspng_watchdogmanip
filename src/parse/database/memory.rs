@@ -407,7 +407,11 @@ fn score_command(command: &ParsedCommand, query_tokens: &[String]) -> (usize, Ve
 
     let kind = format!("{:?}", command.kind).to_ascii_lowercase();
     let raw_identity = command.raw_identity.to_ascii_lowercase();
-    let title = command.title.as_deref().unwrap_or_default().to_ascii_lowercase();
+    let title = command
+        .title
+        .as_deref()
+        .unwrap_or_default()
+        .to_ascii_lowercase();
     let description = command
         .description
         .as_deref()

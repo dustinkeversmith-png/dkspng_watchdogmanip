@@ -11,28 +11,66 @@ pub fn mock_navigation_index() -> NavigationIndex {
     index.add_scope("src", Some("project".to_string()));
     index.add_scope("parser", Some("src".to_string()));
 
-    index.add_alias(AliasDefinition::new("project", "readme", NavigationTarget::File(FileTarget {
-        path: PathBuf::from("./README.md"), line: Some(1), column: None, marker: None, open_mode: OpenMode::Editor,
-    })));
-    index.add_alias(AliasDefinition::new("project", "docs", NavigationTarget::Folder(FolderTarget {
-        path: PathBuf::from("./docs"), open_mode: OpenMode::Explorer,
-    })));
-    index.add_alias(AliasDefinition::new("docs", "parser", NavigationTarget::File(FileTarget {
-        path: PathBuf::from("./docs/PARSER_PIPELINE.md"), line: None, column: None, marker: Some("BoundarySolver".to_string()), open_mode: OpenMode::Editor,
-    })));
-    index.add_alias(AliasDefinition::new("parser", "parser", NavigationTarget::File(FileTarget {
-        path: PathBuf::from("./src/parser/mod.rs"), line: Some(12), column: None, marker: None, open_mode: OpenMode::Editor,
-    })));
-    index.add_alias(AliasDefinition::new("global", "terminal", NavigationTarget::Command(CommandTarget {
-        command_name: "open_terminal".to_string(), args: vec![".".to_string()],
-    })));
-    index.add_alias(AliasDefinition::new("project", "parser-workspace", NavigationTarget::Multi {
-        targets: vec![
-            NavigationTarget::file("./src/parser/mod.rs"),
-            NavigationTarget::file("./docs/PARSER_PIPELINE.md"),
-            NavigationTarget::folder("./fixtures"),
-        ],
-    }));
+    index.add_alias(AliasDefinition::new(
+        "project",
+        "readme",
+        NavigationTarget::File(FileTarget {
+            path: PathBuf::from("./README.md"),
+            line: Some(1),
+            column: None,
+            marker: None,
+            open_mode: OpenMode::Editor,
+        }),
+    ));
+    index.add_alias(AliasDefinition::new(
+        "project",
+        "docs",
+        NavigationTarget::Folder(FolderTarget {
+            path: PathBuf::from("./docs"),
+            open_mode: OpenMode::Explorer,
+        }),
+    ));
+    index.add_alias(AliasDefinition::new(
+        "docs",
+        "parser",
+        NavigationTarget::File(FileTarget {
+            path: PathBuf::from("./docs/PARSER_PIPELINE.md"),
+            line: None,
+            column: None,
+            marker: Some("BoundarySolver".to_string()),
+            open_mode: OpenMode::Editor,
+        }),
+    ));
+    index.add_alias(AliasDefinition::new(
+        "parser",
+        "parser",
+        NavigationTarget::File(FileTarget {
+            path: PathBuf::from("./src/parser/mod.rs"),
+            line: Some(12),
+            column: None,
+            marker: None,
+            open_mode: OpenMode::Editor,
+        }),
+    ));
+    index.add_alias(AliasDefinition::new(
+        "global",
+        "terminal",
+        NavigationTarget::Command(CommandTarget {
+            command_name: "open_terminal".to_string(),
+            args: vec![".".to_string()],
+        }),
+    ));
+    index.add_alias(AliasDefinition::new(
+        "project",
+        "parser-workspace",
+        NavigationTarget::Multi {
+            targets: vec![
+                NavigationTarget::file("./src/parser/mod.rs"),
+                NavigationTarget::file("./docs/PARSER_PIPELINE.md"),
+                NavigationTarget::folder("./fixtures"),
+            ],
+        },
+    ));
 
     index.add_symbol(SymbolDefinition {
         name: "BoundarySolver".to_string(),

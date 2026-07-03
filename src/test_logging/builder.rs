@@ -3,9 +3,9 @@ use crate::test_logging::model::{
     CommandRef, CrossRefDatabaseSection, CrossRefDatabaseTableLog, CrossRefParseCommandRecord,
     CrossRefParseFileRecord, CrossRefParseSection, CrossRefSearchHit, CrossRefSearchLogRecord,
     CrossRefWalkRecord, CrossRefWalkSection, DatabaseTableLog, DbRef, FileRef,
-    ParseCommandLogRecord, ParseFileLogRecord, SearchLogRecord, SourceSpan,
-    TestOutputDiagnostic, TestOutputDocument, TestOutputIndexes, TestOutputLink, TestOutputSchema,
-    TestOutputSections, TestOutputSummary, TestRunInfo, WalkEfficacySummary, WalkLogRecord,
+    ParseCommandLogRecord, ParseFileLogRecord, SearchLogRecord, SourceSpan, TestOutputDiagnostic,
+    TestOutputDocument, TestOutputIndexes, TestOutputLink, TestOutputSchema, TestOutputSections,
+    TestOutputSummary, TestRunInfo, WalkEfficacySummary, WalkLogRecord,
 };
 use crate::test_logging::refs::{
     command_ref, db_ref_for_row, file_ref, parse_file_ref, run_ref, search_hit_ref, search_ref,
@@ -80,7 +80,12 @@ impl TestOutputBuilder {
             total_files_seen: self.walk_files.len(),
             included_files: self.walk_files.len(),
             skipped_files: 0,
-            max_depth_seen: self.walk_files.iter().map(|file| file.depth).max().unwrap_or(0),
+            max_depth_seen: self
+                .walk_files
+                .iter()
+                .map(|file| file.depth)
+                .max()
+                .unwrap_or(0),
             extensions_seen: Vec::new(),
         });
 
@@ -139,9 +144,10 @@ impl TestOutputBuilder {
 
         let mut cross_parse_files = cross_parse_files;
         for parse_file in &cross_parse_files {
-            indexes
-                .parse_files_by_file_ref
-                .insert(parse_file.file_ref.clone(), parse_file.parse_file_ref.clone());
+            indexes.parse_files_by_file_ref.insert(
+                parse_file.file_ref.clone(),
+                parse_file.parse_file_ref.clone(),
+            );
             links.push(TestOutputLink {
                 from: parse_file.file_ref.clone(),
                 to: parse_file.parse_file_ref.clone(),
@@ -485,10 +491,7 @@ impl TestOutputBuilder {
             }
         }
 
-        let search_hit_count = cross_searches
-            .iter()
-            .map(|search| search.hits.len())
-            .sum();
+        let search_hit_count = cross_searches.iter().map(|search| search.hits.len()).sum();
 
         let summary = TestOutputSummary {
             file_count: cross_walk_files.len(),
@@ -566,7 +569,9 @@ fn build_command_key_to_db_ref(
     source_id_to_name: &BTreeMap<i64, String>,
 ) -> HashMap<(String, String), DbRef> {
     let mut map = HashMap::new();
-    let Some(parsed_commands) = tables.iter().find(|table| table.table_name == "parsed_commands")
+    let Some(parsed_commands) = tables
+        .iter()
+        .find(|table| table.table_name == "parsed_commands")
     else {
         return map;
     };
@@ -733,7 +738,11 @@ mod tests {
         assert_eq!(document.schema.format, "cross_referenced_test_dump");
         assert_eq!(document.summary.parsed_command_count, 1);
         assert_eq!(
-            document.indexes.files_by_source_name.get("demo.txt").unwrap(),
+            document
+                .indexes
+                .files_by_source_name
+                .get("demo.txt")
+                .unwrap(),
             "file:0001"
         );
         assert_eq!(
