@@ -1,9 +1,9 @@
 use macro_os_engines::parse::model::SourceDocument;
+use macro_os_engines::parse::pipeline::ParseContext;
+use macro_os_engines::parse::registry::CommandRegistry;
 use macro_os_engines::parse::seeds::{
     ClassifierCommandSeedStrategy, CommandSeedDetector, CommandSeedStrategy,
 };
-use macro_os_engines::parse::registry::CommandRegistry;
-use macro_os_engines::parse::pipeline::ParseContext;
 use macro_os_engines::parse::CommandKind;
 use serde_json::json;
 use std::fs;
@@ -36,16 +36,24 @@ Reference ./src/file.rs
     let strategy = ClassifierCommandSeedStrategy::with_defaults();
     let seeds = strategy.detect(&ctx);
 
-    assert!(seeds.iter().any(|s| matches!(s.canonical_kind, CommandKind::Task)));
-    assert!(seeds.iter().any(|s| matches!(s.canonical_kind, CommandKind::Project)));
-    assert!(seeds.iter().any(|s| matches!(s.canonical_kind, CommandKind::Deferred)));
-    assert!(seeds.iter().any(|s| matches!(s.canonical_kind, CommandKind::Current)));
-    assert!(seeds.iter().any(|s| matches!(s.canonical_kind, CommandKind::Reference)));
-    assert!(
-        seeds
-            .iter()
-            .any(|s| s.chain.len() >= 2 && s.chain.contains(&"idea".to_string()))
-    );
+    assert!(seeds
+        .iter()
+        .any(|s| matches!(s.canonical_kind, CommandKind::Task)));
+    assert!(seeds
+        .iter()
+        .any(|s| matches!(s.canonical_kind, CommandKind::Project)));
+    assert!(seeds
+        .iter()
+        .any(|s| matches!(s.canonical_kind, CommandKind::Deferred)));
+    assert!(seeds
+        .iter()
+        .any(|s| matches!(s.canonical_kind, CommandKind::Current)));
+    assert!(seeds
+        .iter()
+        .any(|s| matches!(s.canonical_kind, CommandKind::Reference)));
+    assert!(seeds
+        .iter()
+        .any(|s| s.chain.len() >= 2 && s.chain.contains(&"idea".to_string())));
     assert!(seeds.iter().all(|s| s.confidence < 0.95));
 
     write_json(

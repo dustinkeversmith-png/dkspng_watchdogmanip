@@ -86,7 +86,10 @@ impl MacroPipeline {
         self
     }
 
-    pub fn with_command_seed_detector(mut self, command_seed_detector: CommandSeedDetector) -> Self {
+    pub fn with_command_seed_detector(
+        mut self,
+        command_seed_detector: CommandSeedDetector,
+    ) -> Self {
         self.command_seed_detector = command_seed_detector;
         self
     }

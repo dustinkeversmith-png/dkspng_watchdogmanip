@@ -1,9 +1,8 @@
 use macro_os_engines::parse::boundary::{
-    BodyDirection, BodyShapeHint, BoundaryMetadataKind, BoundarySolver,
-    CommandSeedBoundaryStrategy,
+    BodyDirection, BodyShapeHint, BoundaryMetadataKind, BoundarySolver, CommandSeedBoundaryStrategy,
 };
-use macro_os_engines::parse::BoundaryStrategy;
 use macro_os_engines::parse::model::SourceDocument;
+use macro_os_engines::parse::BoundaryStrategy;
 use serde_json::json;
 use std::fs;
 use std::path::PathBuf;
@@ -29,22 +28,16 @@ fn boundary_candidates_include_rich_metadata() {
     let candidates = solver.collect_boundary_candidates(&doc);
 
     assert!(!candidates.is_empty());
-    assert!(
-        candidates
-            .iter()
-            .any(|c| c.metadata_kind == BoundaryMetadataKind::CommandSeedLine
-                || c.metadata_kind == BoundaryMetadataKind::SameLinePayload)
-    );
-    assert!(
-        candidates
-            .iter()
-            .any(|c| c.body_direction != BodyDirection::Unknown)
-    );
-    assert!(
-        candidates
-            .iter()
-            .any(|c| c.body_shape_hint != BodyShapeHint::Unknown)
-    );
+    assert!(candidates
+        .iter()
+        .any(|c| c.metadata_kind == BoundaryMetadataKind::CommandSeedLine
+            || c.metadata_kind == BoundaryMetadataKind::SameLinePayload));
+    assert!(candidates
+        .iter()
+        .any(|c| c.body_direction != BodyDirection::Unknown));
+    assert!(candidates
+        .iter()
+        .any(|c| c.body_shape_hint != BodyShapeHint::Unknown));
     assert!(candidates.iter().all(|c| !c.evidence.is_empty()));
     assert!(candidates.iter().all(|c| c.confidence > 0.0));
 

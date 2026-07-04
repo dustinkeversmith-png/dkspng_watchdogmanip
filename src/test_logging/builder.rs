@@ -536,9 +536,7 @@ impl TestOutputBuilder {
 fn source_span_from_location(location: &crate::parse::model::SourceLocation) -> Option<SourceSpan> {
     Some(SourceSpan {
         start_line: location.start_line as u32,
-        end_line: location
-            .end_line
-            .unwrap_or(location.start_line) as u32,
+        end_line: location.end_line.unwrap_or(location.start_line) as u32,
     })
 }
 

@@ -154,8 +154,7 @@ pub struct HeadingCommandSeedStrategy;
 
 impl HeadingCommandSeedStrategy {
     fn heading_pattern() -> &'static Regex {
-        static RE: Lazy<Regex> =
-            Lazy::new(|| Regex::new(r"^\s*#{1,6}\s+(?P<title>.+)$").unwrap());
+        static RE: Lazy<Regex> = Lazy::new(|| Regex::new(r"^\s*#{1,6}\s+(?P<title>.+)$").unwrap());
         &RE
     }
 }

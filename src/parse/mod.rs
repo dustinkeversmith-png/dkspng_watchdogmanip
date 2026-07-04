@@ -17,6 +17,10 @@ pub mod registry;
 pub mod seeds;
 pub mod shape;
 
+pub use self::boundary::{
+    BlockAssemblerRegistry, BlockAssemblyStrategy, BoundarySolver, BoundaryStrategy,
+    BoundaryStrategyRegistry,
+};
 pub use self::model::*;
 pub use self::parser::Parser;
 pub use self::pipeline::{MacroPipeline, ParseContext, PipelineConfig};
@@ -24,13 +28,9 @@ pub use self::registry::{
     member, parameter, CommandBodyPolicy, CommandLayoutKind, CommandRegistry, CommandSpec,
     MemberSpec, ParameterSpec,
 };
-pub use self::boundary::{
-    BlockAssemblerRegistry, BlockAssemblyStrategy, BoundarySolver, BoundaryStrategy,
-    BoundaryStrategyRegistry,
-};
 pub use self::seeds::{
-    CommandSeedDetector, CommandSeedStrategy, CommandSeedStrategyRegistry, SeedDetector,
-    SeedDetectionStrategy, SeedDetectionStrategyRegistry,
+    CommandSeedDetector, CommandSeedStrategy, CommandSeedStrategyRegistry, SeedDetectionStrategy,
+    SeedDetectionStrategyRegistry, SeedDetector,
 };
 
 pub use self::database::*;

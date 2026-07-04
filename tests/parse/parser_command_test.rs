@@ -1,3 +1,4 @@
+use macro_os_engines::parse::model::BoundaryKind;
 use macro_os_engines::parse::model::SourceDocument;
 use macro_os_engines::parse::registry::{
     member, parameter, CommandBodyPolicy, CommandLayoutKind, CommandRegistry, CommandSpec,
@@ -5,7 +6,6 @@ use macro_os_engines::parse::registry::{
 use macro_os_engines::parse::seeds::CommandSeedDetector;
 use macro_os_engines::parse::shape::CommandShapeKind;
 use macro_os_engines::parse::{CommandKind, MacroPipeline, ParseContext};
-use macro_os_engines::parse::model::BoundaryKind;
 
 #[test]
 fn registry_resolves_aliases_and_multi_word_chains() {
@@ -17,14 +17,24 @@ fn registry_resolves_aliases_and_multi_word_chains() {
     assert!(registry.lookup_chain(&["task".into()]).is_some());
 
     let task_spec = registry.lookup_name("task").unwrap();
-    assert!(task_spec.members_with_tag("title_candidate").iter().any(|m| m.name == "Title"));
+    assert!(task_spec
+        .members_with_tag("title_candidate")
+        .iter()
+        .any(|m| m.name == "Title"));
 
-    let doc = SourceDocument::new("chains.md", "@deferred Idea fold later\n@Task Build resolver");
+    let doc = SourceDocument::new(
+        "chains.md",
+        "@deferred Idea fold later\n@Task Build resolver",
+    );
     let ctx = ParseContext::new(&doc, &registry);
     let seeds = detector.detect(&ctx);
 
-    assert!(seeds.iter().any(|s| matches!(s.canonical_kind, CommandKind::Deferred)));
-    assert!(seeds.iter().any(|s| matches!(s.canonical_kind, CommandKind::Task)));
+    assert!(seeds
+        .iter()
+        .any(|s| matches!(s.canonical_kind, CommandKind::Deferred)));
+    assert!(seeds
+        .iter()
+        .any(|s| matches!(s.canonical_kind, CommandKind::Task)));
 }
 
 #[test]

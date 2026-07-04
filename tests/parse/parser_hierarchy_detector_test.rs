@@ -33,7 +33,9 @@ fn heading_hierarchy_detector_finds_markdown_headings() {
     let signals = detector.detect(&doc, &empty_blocks());
 
     assert_eq!(signals.len(), 3);
-    assert!(signals.iter().all(|s| s.kind == HierarchySignalKind::MarkdownHeading));
+    assert!(signals
+        .iter()
+        .all(|s| s.kind == HierarchySignalKind::MarkdownHeading));
     assert_eq!(signals[0].level, 1);
     assert_eq!(signals[1].level, 2);
 }
@@ -46,7 +48,9 @@ fn numbered_list_detector_handles_restart_groups() {
     let signals = detector.detect(&doc, &empty_blocks());
 
     assert_eq!(signals.len(), 4);
-    assert!(signals.iter().all(|s| s.kind == HierarchySignalKind::NumberedList));
+    assert!(signals
+        .iter()
+        .all(|s| s.kind == HierarchySignalKind::NumberedList));
     let restart = signals
         .iter()
         .find(|s| s.label.as_deref() == Some("New group"))
@@ -61,8 +65,12 @@ fn bullet_list_and_indentation_detectors_emit_signals() {
     let registry = HierarchyDetectorRegistry::with_defaults();
     let signals = registry.detect_all(&doc, &empty_blocks());
 
-    assert!(signals.iter().any(|s| s.kind == HierarchySignalKind::BulletList));
-    assert!(signals.iter().any(|s| s.kind == HierarchySignalKind::Indentation));
+    assert!(signals
+        .iter()
+        .any(|s| s.kind == HierarchySignalKind::BulletList));
+    assert!(signals
+        .iter()
+        .any(|s| s.kind == HierarchySignalKind::Indentation));
 
     write_json(
         PathBuf::from(LOG_DIR).join("hierarchy_detector_signals.json"),

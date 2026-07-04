@@ -46,14 +46,12 @@ impl CommandShapeDetector {
         if trimmed_body.is_empty() && inline.is_empty() {
             shape_kinds.push(CommandShapeKind::EmptyBody);
             body_shape = BodyShapeHint::Empty;
-        } else if trimmed_body.starts_with('[') || trimmed_body.contains('\n') && trimmed_body.contains('[') {
+        } else if trimmed_body.starts_with('[')
+            || trimmed_body.contains('\n') && trimmed_body.contains('[')
+        {
             shape_kinds.push(CommandShapeKind::BracketedBody);
             body_shape = BodyShapeHint::BracketedBlock;
-        } else if block
-            .body_lines
-            .iter()
-            .any(|l| MEMBER_LINE.is_match(l))
-        {
+        } else if block.body_lines.iter().any(|l| MEMBER_LINE.is_match(l)) {
             shape_kinds.push(CommandShapeKind::KeyValueMembers);
             body_shape = BodyShapeHint::KeyValueBlock;
             for (idx, line) in block.body_lines.iter().enumerate() {
@@ -71,13 +69,22 @@ impl CommandShapeDetector {
                     }
                 }
             }
-        } else if block.body_lines.iter().any(|l| l.starts_with("    ") || l.starts_with('\t')) {
+        } else if block
+            .body_lines
+            .iter()
+            .any(|l| l.starts_with("    ") || l.starts_with('\t'))
+        {
             shape_kinds.push(CommandShapeKind::IndentedBody);
             body_shape = BodyShapeHint::IndentedBlock;
         } else if !trimmed_body.is_empty() {
             shape_kinds.push(CommandShapeKind::ProseOnly);
             body_shape = BodyShapeHint::FreeformProse;
-            if let Some(first) = block.body_lines.iter().map(|l| l.trim()).find(|l| !l.is_empty()) {
+            if let Some(first) = block
+                .body_lines
+                .iter()
+                .map(|l| l.trim())
+                .find(|l| !l.is_empty())
+            {
                 title_candidates.push(TitleCandidate {
                     kind: TitleCandidateKind::FirstNonEmptyBodyLine,
                     text: first.to_string(),

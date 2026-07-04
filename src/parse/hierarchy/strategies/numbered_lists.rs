@@ -44,9 +44,7 @@ impl HierarchyDetector for NumberedListHierarchyDetector {
             }
             last_num = num;
             last_line = line.number;
-            let label = caps
-                .name("body")
-                .map(|m| m.as_str().trim().to_string());
+            let label = caps.name("body").map(|m| m.as_str().trim().to_string());
             signals.push(HierarchySignal {
                 kind: HierarchySignalKind::NumberedList,
                 line: line.number,

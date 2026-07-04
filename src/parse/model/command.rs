@@ -1,8 +1,8 @@
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
 
-use super::TextSpan;
 use super::SourceLocation;
+use super::TextSpan;
 use crate::parse::shape::CommandShapeAnalysis;
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]

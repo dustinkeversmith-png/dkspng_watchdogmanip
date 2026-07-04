@@ -47,7 +47,6 @@ mod chained_at_command {
 
     #[test]
     fn detects_chained_commands_only() {
-
         let text = include_str!("../fixtures/example_docs/planner/docs/Scratch/messy_notes.txt");
 
         let doc = SourceDocument::new("messy_notes.txt", text);
@@ -60,9 +59,6 @@ mod chained_at_command {
             PathBuf::from(LOG_DIR).join("detects_chained_commands.json"),
             &serde_json::to_value(&seeds).expect("serialize seeds"),
         );
-
-        
-
     }
 }
 

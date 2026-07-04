@@ -1,6 +1,6 @@
+use macro_os_engines::parse::boundary::BoundarySolver;
 use macro_os_engines::parse::model::SourceDocument;
 use macro_os_engines::parse::registry::CommandRegistry;
-use macro_os_engines::parse::boundary::BoundarySolver;
 use macro_os_engines::parse::{MacroPipeline, ParseContext, PipelineConfig};
 use serde_json::json;
 use std::fs;

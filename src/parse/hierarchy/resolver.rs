@@ -1,8 +1,6 @@
 use crate::parse::boundary::CommandBlock;
 use crate::parse::hierarchy::detector::HierarchyDetectorRegistry;
-use crate::parse::hierarchy::model::{
-    HierarchySignal, HierarchySignalKind, ParseHierarchyNode,
-};
+use crate::parse::hierarchy::model::{HierarchySignal, HierarchySignalKind, ParseHierarchyNode};
 use crate::parse::model::{CommandKind, ParsedCommand, SourceDocument};
 
 #[derive(Debug, Clone, Default)]
@@ -43,11 +41,7 @@ pub fn resolve_hierarchy_with_detectors(
 
     for command in commands.iter_mut() {
         while signal_idx < signals.len() && signals[signal_idx].line <= command.span.line_start {
-            apply_signal(
-                &signals[signal_idx],
-                &mut heading_stack,
-                &mut list_stack,
-            );
+            apply_signal(&signals[signal_idx], &mut heading_stack, &mut list_stack);
             signal_idx += 1;
         }
 
@@ -91,16 +85,15 @@ pub fn resolve_hierarchy_with_detectors(
         command.list_context = list_context;
         command.hierarchy_path = hierarchy_path.clone();
 
-        let parent_id = find_parent_id(
-            command,
-            &hierarchy_path,
-            &prior,
-            &heading_stack,
-        );
+        let parent_id = find_parent_id(command, &hierarchy_path, &prior, &heading_stack);
         command.parent_id = parent_id.clone();
 
         let signal_kinds = active_signal_kinds(&heading_stack, &list_stack);
-        prior.push((command.id.clone(), command.span.line_start, hierarchy_path.clone()));
+        prior.push((
+            command.id.clone(),
+            command.span.line_start,
+            hierarchy_path.clone(),
+        ));
 
         nodes.push(ParseHierarchyNode {
             command_id: command.id.clone(),

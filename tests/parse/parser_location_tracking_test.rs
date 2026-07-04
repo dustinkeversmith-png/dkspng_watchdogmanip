@@ -6,7 +6,8 @@ use tempfile::tempdir;
 
 #[test]
 fn parsed_commands_include_structured_source_location() {
-    let file_path = PathBuf::from("tests/fixtures/example_docs/planner/docs/Scratch/messy_notes.txt");
+    let file_path =
+        PathBuf::from("tests/fixtures/example_docs/planner/docs/Scratch/messy_notes.txt");
     let text = "@Task Location tracking test\nTitle: With path";
     let doc = SourceDocument::with_path("messy_notes.txt", Some(file_path.clone()), text);
     let output = MacroPipeline::default().parse_document(doc);

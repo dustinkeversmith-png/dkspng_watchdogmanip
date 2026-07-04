@@ -10,7 +10,8 @@ pub struct MarkdownHeadingHierarchyDetector;
 
 impl MarkdownHeadingHierarchyDetector {
     fn heading_re() -> &'static Regex {
-        static RE: Lazy<Regex> = Lazy::new(|| Regex::new(r"^(?P<hashes>#{1,6})\s+(?P<title>.+)$").unwrap());
+        static RE: Lazy<Regex> =
+            Lazy::new(|| Regex::new(r"^(?P<hashes>#{1,6})\s+(?P<title>.+)$").unwrap());
         &RE
     }
 }

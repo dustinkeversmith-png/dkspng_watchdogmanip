@@ -114,11 +114,7 @@ fn logged_real_path_walk_macropipeline_database_efficacy() {
         total_files_seen: walked.files.len(),
         included_files: parseable.len(),
         skipped_files: walked.files.len().saturating_sub(parseable.len()),
-        max_depth_seen: parseable
-            .iter()
-            .map(|file| file.depth)
-            .max()
-            .unwrap_or(0),
+        max_depth_seen: parseable.iter().map(|file| file.depth).max().unwrap_or(0),
         extensions_seen,
     };
 
@@ -127,7 +123,11 @@ fn logged_real_path_walk_macropipeline_database_efficacy() {
     let thread_count = env::var("PARSE_TEST_THREADS")
         .ok()
         .and_then(|v| v.parse().ok())
-        .unwrap_or_else(|| std::thread::available_parallelism().map(|n| n.get()).unwrap_or(4));
+        .unwrap_or_else(|| {
+            std::thread::available_parallelism()
+                .map(|n| n.get())
+                .unwrap_or(4)
+        });
 
     std::thread::scope(|scope| {
         for thread_idx in 0..thread_count {
@@ -151,9 +151,7 @@ fn logged_real_path_walk_macropipeline_database_efficacy() {
                     let error_count = output
                         .diagnostics
                         .iter()
-                        .filter(|d| {
-                            matches!(d.severity, macro_os_engines::parse::Severity::Error)
-                        })
+                        .filter(|d| matches!(d.severity, macro_os_engines::parse::Severity::Error))
                         .count();
                     outcomes
                         .lock()
@@ -321,7 +319,11 @@ fn logged_real_path_walk_macropipeline_database_efficacy() {
 
     println!("test log written to: {}", log_path.display());
     println!("parse example root: {}", root_path.display());
-    println!("walked files (total / parsed): {} / {}", walked.files.len(), parsed_files.len());
+    println!(
+        "walked files (total / parsed): {} / {}",
+        walked.files.len(),
+        parsed_files.len()
+    );
     println!("parse threads: {thread_count}");
     println!("parse phase: {:.2?}", parse_elapsed);
     println!("database insert phase: {:.2?}", db_elapsed);

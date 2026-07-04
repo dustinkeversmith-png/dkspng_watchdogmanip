@@ -6,6 +6,6 @@ pub use model::*;
 pub use solver::*;
 pub use strategies::{
     BlankLineBoundaryStrategy, BoundaryStrategy, BoundaryStrategyRegistry,
-    CommandSeedBoundaryStrategy, HeadingBoundaryStrategy, InlineCommandBoundaryStrategy,
-    IndentationBoundaryStrategy,
+    CommandSeedBoundaryStrategy, HeadingBoundaryStrategy, IndentationBoundaryStrategy,
+    InlineCommandBoundaryStrategy,
 };

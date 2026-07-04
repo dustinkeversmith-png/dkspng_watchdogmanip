@@ -1,15 +1,13 @@
-use crate::parse::boundary::model::{BoundaryCandidate, BoundaryMarkerKind, CommandBlock, ParseDocumentInput};
+use crate::parse::boundary::model::{
+    BoundaryCandidate, BoundaryMarkerKind, CommandBlock, ParseDocumentInput,
+};
 use crate::parse::boundary::strategies::BoundaryStrategyRegistry;
 use crate::parse::model::{BoundaryKind, CommandSeed};
 use crate::parse::pipeline::ParseContext;
 
 pub trait BlockAssemblyStrategy {
     fn name(&self) -> &'static str;
-    fn assemble_blocks(
-        &self,
-        ctx: &ParseContext,
-        seeds: &[CommandSeed],
-    ) -> Vec<CommandBlock>;
+    fn assemble_blocks(&self, ctx: &ParseContext, seeds: &[CommandSeed]) -> Vec<CommandBlock>;
 }
 
 #[derive(Default)]
@@ -87,7 +85,10 @@ impl BoundarySolver {
         &mut self.block_assemblers
     }
 
-    pub fn collect_boundary_candidates(&self, document: &ParseDocumentInput) -> Vec<BoundaryCandidate> {
+    pub fn collect_boundary_candidates(
+        &self,
+        document: &ParseDocumentInput,
+    ) -> Vec<BoundaryCandidate> {
         self.boundary_strategies.collect_candidates(document)
     }
 
@@ -103,11 +104,7 @@ impl BlockAssemblyStrategy for NextSeedBlockAssemblyStrategy {
         "next_seed"
     }
 
-    fn assemble_blocks(
-        &self,
-        ctx: &ParseContext,
-        seeds: &[CommandSeed],
-    ) -> Vec<CommandBlock> {
+    fn assemble_blocks(&self, ctx: &ParseContext, seeds: &[CommandSeed]) -> Vec<CommandBlock> {
         let doc = ctx.document;
         let mut blocks = Vec::new();
         for (idx, seed) in seeds.iter().enumerate() {

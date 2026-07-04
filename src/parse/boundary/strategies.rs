@@ -31,8 +31,8 @@ impl BoundaryStrategy for CommandSeedBoundaryStrategy {
             .iter()
             .filter(|line| Self::at_command_prefix().is_match(&line.text))
             .map(|line| {
-                let has_payload = line.text.trim().contains(' ')
-                    && !line.text.trim().ends_with('@');
+                let has_payload =
+                    line.text.trim().contains(' ') && !line.text.trim().ends_with('@');
                 let (meta, direction, shape) = if has_payload {
                     (
                         BoundaryMetadataKind::SameLinePayload,

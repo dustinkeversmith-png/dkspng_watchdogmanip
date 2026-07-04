@@ -41,7 +41,9 @@ fn inline_body_captures_title_candidate() {
 fn next_line_body_captures_content_below_command() {
     let output = parse_case("next_line.md", "@Task\nBuild parser body tests");
     let cmd = &output.commands[0];
-    assert!(cmd.content.contains("Build") || cmd.title.as_deref() == Some("Build parser body tests"));
+    assert!(
+        cmd.content.contains("Build") || cmd.title.as_deref() == Some("Build parser body tests")
+    );
 }
 
 #[test]
@@ -52,7 +54,9 @@ fn key_value_body_extracts_members() {
     assert!(cmd.members.contains_key("Title"));
     assert!(cmd.members.contains_key("Description"));
     let shape = cmd.shape_analysis.as_ref().unwrap();
-    assert!(shape.shape_kinds.contains(&CommandShapeKind::KeyValueMembers));
+    assert!(shape
+        .shape_kinds
+        .contains(&CommandShapeKind::KeyValueMembers));
     assert_eq!(shape.body_shape, BodyShapeHint::KeyValueBlock);
 }
 

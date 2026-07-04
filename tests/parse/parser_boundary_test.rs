@@ -1,7 +1,7 @@
 use macro_os_engines::parse::boundary::{
     BlankLineBoundaryStrategy, BoundaryMarkerKind, BoundarySolver, BoundaryStrategy,
-    CommandSeedBoundaryStrategy, HeadingBoundaryStrategy, InlineCommandBoundaryStrategy,
-    IndentationBoundaryStrategy,
+    CommandSeedBoundaryStrategy, HeadingBoundaryStrategy, IndentationBoundaryStrategy,
+    InlineCommandBoundaryStrategy,
 };
 use macro_os_engines::parse::model::SourceDocument;
 use serde_json::json;
@@ -28,11 +28,23 @@ fn boundary_strategies_detect_messy_doc_markers() {
     let solver = BoundarySolver::with_defaults();
 
     let strategy_results = [
-        ("command_seed", CommandSeedBoundaryStrategy.find_boundaries(&doc)),
-        ("inline_command", InlineCommandBoundaryStrategy.find_boundaries(&doc)),
+        (
+            "command_seed",
+            CommandSeedBoundaryStrategy.find_boundaries(&doc),
+        ),
+        (
+            "inline_command",
+            InlineCommandBoundaryStrategy.find_boundaries(&doc),
+        ),
         ("heading", HeadingBoundaryStrategy.find_boundaries(&doc)),
-        ("blank_line", BlankLineBoundaryStrategy.find_boundaries(&doc)),
-        ("indentation", IndentationBoundaryStrategy.find_boundaries(&doc)),
+        (
+            "blank_line",
+            BlankLineBoundaryStrategy.find_boundaries(&doc),
+        ),
+        (
+            "indentation",
+            IndentationBoundaryStrategy.find_boundaries(&doc),
+        ),
     ];
 
     // 1. Loop through individual strategy results and save them
@@ -40,17 +52,11 @@ fn boundary_strategies_detect_messy_doc_markers() {
         // Construct filename like: "messy_notes_command_seed_results.json"
         let filename = format!("messy_notes_{}_results.json", name);
         let path = PathBuf::from(LOG_DIR).join(filename);
-        
+
         // Write the individual results to a file
         // Write all of the different results
-        write_json(
-            path,
-            &json!({ "results": results }),
-        );
+        write_json(path, &json!({ "results": results }));
     }
-
-
-        
 
     let command_boundaries = &strategy_results[0].1;
     let inline_boundaries = &strategy_results[1].1;
@@ -87,8 +93,6 @@ fn boundary_strategies_detect_messy_doc_markers() {
             })
         })
         .collect();
-
-    
 
     write_json(
         PathBuf::from(LOG_DIR).join("messy_notes_strategy_comparison.json"),

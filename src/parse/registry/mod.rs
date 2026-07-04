@@ -66,7 +66,10 @@ impl CommandSpec {
     }
 
     pub fn optional_members(&self) -> Vec<String> {
-        self.optional_members.iter().map(|m| m.name.clone()).collect()
+        self.optional_members
+            .iter()
+            .map(|m| m.name.clone())
+            .collect()
     }
 
     pub fn expected_parameters(&self) -> Vec<String> {
@@ -438,25 +441,13 @@ fn spec(
 ) -> CommandSpec {
     let parameters: Vec<ParameterSpec> = params
         .iter()
-        .map(|name| {
-            parameter(
-                name,
-                false,
-                &[],
-                &default_parameter_tags(name),
-            )
-        })
+        .map(|name| parameter(name, false, &[], &default_parameter_tags(name)))
         .collect();
     let optional_members: Vec<MemberSpec> = members
         .iter()
         .map(|name| {
             let aliases = default_member_aliases(name);
-            member(
-                name,
-                false,
-                &aliases,
-                &default_member_tags(name),
-            )
+            member(name, false, &aliases, &default_member_tags(name))
         })
         .collect();
     CommandSpec {

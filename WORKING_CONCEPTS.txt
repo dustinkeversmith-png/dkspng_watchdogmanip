@@ -1,0 +1,42 @@
+
+
+
+# A log out put comparator
+
+# Define a view things a iteration order or array list, and then a topological list to follow per iteration, assigning different configurations to the environment or group
+
+CROSS_REFERENCE_LOG
+src/test_logging/
+tests/parse/real_path_tree_database_test.rs
+
+# Config
+parse.files.command_refs, where the command results are
+
+output
+~/target/test-logs/parser_real_path_test
+
+cargo test --test parse logged_real_path_walk_macropipeline_database_efficacy -- --nocapture
+
+1. May not contain relevent meta data such as file names, and locations
+2. May not contain correct database rows/operation references for adding
+
+# Ideas
+Cross Reference Legends and Common Handleable Types/Registry / Access Map
+
+# Problems
+Parse.File.FilePaths...Nearest FilePaths and Such
+Possible When Something is an Action like Parse it might have a biproduct like mutating a database could use the ref, or just denote the reference flow like 
+parse -> command -> db etc etc
+command.source_trace / command.location
+command.db_refs
+
+
+@deferred
+# Trace Router/Viewer/Debugger System
+
+This would be cool to have a trace log system, possibly explore a trace like as if debugging, see like states of variables at the time like some kind of active recall or expansion of a trace some how 
+
+mix between trace and debugger/flow software
+
+
+

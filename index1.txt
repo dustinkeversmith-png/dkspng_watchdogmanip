@@ -1,0 +1,4 @@
+# Build a responsive json viewer/query engine 
+# Build a web viewer for database to see columns
+
+# Build some kind of compedium for responding to detected json types

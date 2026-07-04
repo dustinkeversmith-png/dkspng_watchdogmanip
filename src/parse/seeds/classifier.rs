@@ -47,21 +47,66 @@ pub struct SeedClassifierRegistry {
 impl SeedClassifierRegistry {
     pub fn with_defaults() -> Self {
         let command_keywords = vec![
-            kw("task", Some("task"), SeedClassifierKind::ClassifierKeyword, &["todo"]),
-            kw("idea", Some("idea"), SeedClassifierKind::ClassifierKeyword, &[]),
-            kw("project", Some("project"), SeedClassifierKind::ClassifierKeyword, &[]),
-            kw("prompt", Some("prompt"), SeedClassifierKind::ClassifierKeyword, &[]),
-            kw("tutorial", Some("tutorial"), SeedClassifierKind::ClassifierKeyword, &["guide"]),
-            kw("deferred", Some("deferred"), SeedClassifierKind::ClassifierKeyword, &["defer"]),
-            kw("current", Some("current"), SeedClassifierKind::ClassifierKeyword, &[]),
+            kw(
+                "task",
+                Some("task"),
+                SeedClassifierKind::ClassifierKeyword,
+                &["todo"],
+            ),
+            kw(
+                "idea",
+                Some("idea"),
+                SeedClassifierKind::ClassifierKeyword,
+                &[],
+            ),
+            kw(
+                "project",
+                Some("project"),
+                SeedClassifierKind::ClassifierKeyword,
+                &[],
+            ),
+            kw(
+                "prompt",
+                Some("prompt"),
+                SeedClassifierKind::ClassifierKeyword,
+                &[],
+            ),
+            kw(
+                "tutorial",
+                Some("tutorial"),
+                SeedClassifierKind::ClassifierKeyword,
+                &["guide"],
+            ),
+            kw(
+                "deferred",
+                Some("deferred"),
+                SeedClassifierKind::ClassifierKeyword,
+                &["defer"],
+            ),
+            kw(
+                "current",
+                Some("current"),
+                SeedClassifierKind::ClassifierKeyword,
+                &[],
+            ),
             kw(
                 "reference",
                 Some("reference"),
                 SeedClassifierKind::ReferenceLike,
                 &["ref"],
             ),
-            kw("alias", Some("alias"), SeedClassifierKind::ClassifierKeyword, &[]),
-            kw("goal", Some("goals"), SeedClassifierKind::ClassifierKeyword, &["goals"]),
+            kw(
+                "alias",
+                Some("alias"),
+                SeedClassifierKind::ClassifierKeyword,
+                &[],
+            ),
+            kw(
+                "goal",
+                Some("goals"),
+                SeedClassifierKind::ClassifierKeyword,
+                &["goals"],
+            ),
         ];
         let status_keywords = vec![
             kw("done", None, SeedClassifierKind::StatusKeyword, &[]),
@@ -184,9 +229,7 @@ fn detect_chained_keywords(trimmed: &str, specs: &[ClassifierKeywordSpec]) -> Op
     let w1 = words[1].trim_end_matches(':').to_ascii_lowercase();
     let known: Vec<String> = specs
         .iter()
-        .flat_map(|s| {
-            std::iter::once(s.keyword.clone()).chain(s.aliases.clone())
-        })
+        .flat_map(|s| std::iter::once(s.keyword.clone()).chain(s.aliases.clone()))
         .map(|k| k.to_ascii_lowercase())
         .collect();
     if known.contains(&w0) && known.contains(&w1) {
