@@ -4,4 +4,8 @@ pub mod strategies;
 
 pub use model::*;
 pub use solver::*;
-pub use strategies::*;
+pub use strategies::{
+    BlankLineBoundaryStrategy, BoundaryStrategy, BoundaryStrategyRegistry,
+    CommandSeedBoundaryStrategy, HeadingBoundaryStrategy, InlineCommandBoundaryStrategy,
+    IndentationBoundaryStrategy,
+};

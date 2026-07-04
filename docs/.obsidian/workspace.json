@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "TEST_FIXTURE_COVERAGE.md",
+                "file": "COMPOSER/MACRO_PROCESSING_INLINE_UPDATE.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "TEST_FIXTURE_COVERAGE"
+              "title": "MACRO_PROCESSING_INLINE_UPDATE"
             }
           }
         ]
@@ -94,7 +94,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "TEST_FIXTURE_COVERAGE.md",
+                "file": "COMPOSER/MACRO_PROCESSING_INLINE_UPDATE.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -104,7 +104,7 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "Backlinks for TEST_FIXTURE_COVERAGE"
+              "title": "Backlinks for MACRO_PROCESSING_INLINE_UPDATE"
             }
           },
           {
@@ -183,6 +183,16 @@
   },
   "active": "b9ef7f2aacec85e7",
   "lastOpenFiles": [
+    "SOURCE_REFERENCE_FORMAT.md",
+    "COMPOSER/CHANGES_4.md",
+    "COMPOSER/CHANGES_DOCS.md",
+    "COMPOSER/SUPER_SHAPE_ORIG_NOTES.md",
+    "COMPOSER/SUPER_SHAPE_ENHANCER_GUIDE.md",
+    "COMPOSER/CHNAGES_4.md",
+    "COMPOSER/CHANGES_NOTES.md",
+    "TEST_FIXTURE_COVERAGE.md",
+    "COMPOSER/MACRO_PROCESSING_INLINE_UPDATE.md",
+    "COMPOSER/CHANGES_3.md",
     "COMPOSER/CHANGES_2.md",
     "COMPOSER/CHANGES_1.md",
     "PARSE_README.md",

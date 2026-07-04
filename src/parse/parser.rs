@@ -1,22 +1,23 @@
 use crate::parse::model::{ParseOutput, SourceDocument};
 use crate::parse::pipeline::{MacroPipeline, PipelineConfig};
-use crate::parse::registry::{default_registry, CommandRegistry};
+use crate::parse::registry::CommandRegistry;
 
-#[derive(Debug, Clone)]
 pub struct Parser {
     inner: MacroPipeline,
 }
 
 impl Default for Parser {
     fn default() -> Self {
-        Self::new(default_registry(), PipelineConfig::default())
+        Self {
+            inner: MacroPipeline::default(),
+        }
     }
 }
 
 impl Parser {
     pub fn new(registry: CommandRegistry, config: PipelineConfig) -> Self {
         Self {
-            inner: MacroPipeline::new(registry, config),
+            inner: MacroPipeline::with_defaults(config).with_command_registry(registry),
         }
     }
 
@@ -25,6 +26,6 @@ impl Parser {
     }
 
     pub fn parse_document(&self, doc: SourceDocument) -> ParseOutput {
-        self.inner.parse(doc.source_name.clone(), doc.text)
+        self.inner.parse_document(doc)
     }
 }

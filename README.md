@@ -6,11 +6,14 @@ This package merges the previously separate Rust applications into **one Cargo a
 
 ```txt
 src/
-  parse/       # ambiguity-tolerant inline macro parser
+  parse/       # registry-based macro parser (see docs/PARSE_README.md)
   context/     # context hierarchy, local queues/currents, aliases, symbols
   navigation/  # typed alias/navigation resolver and dry-run plans
   history/     # append-only history events, JSONL store, frequency/suggestion scoring
   watchdog/    # watch specs, rules, routines, simulated file events, action planner
+  database/    # shared SQLite connection + migration helpers
+  walk/        # tree walking (files only, no parse)
+  test_logging/# cross-referenced JSON test output builder
 ```
 
 The crate exposes a library named `macro_os_engines` and one binary named `macro-os`.
@@ -21,6 +24,31 @@ The crate exposes a library named `macro_os_engines` and one binary named `macro
 cargo fmt
 cargo test
 ```
+
+### Running tests individually
+
+See **[tests/GLOSSARY.md](tests/GLOSSARY.md)** for every integration target, subtest name, fixture path, and exact `cargo test` command.
+
+Example:
+
+```bash
+cargo test --test parse                    # 17 parse subtests
+cargo test --test parse parser_pipeline_detection
+cargo test --test parse parser_detection
+cargo test --test parse parser_boundary
+cargo test --test context context_resolver
+cargo test --test history suggestion_engine
+```
+
+Parse test JSON logs: `target/test-logs/<test_file_name>/` (see glossary).
+
+### Extending modular parse/context/database
+
+Start with **[workflows/pipeline-and-registries.md](workflows/pipeline-and-registries.md)** for the parse pipeline.
+
+See **[workflows/README.md](workflows/README.md)** for checklists: registry commands, command seed strategies, seed detectors, boundary strategies, block assemblers, extractors, integration tests, database domains.
+
+Parse architecture: **[docs/PARSE_README.md](docs/PARSE_README.md)** · Fixture map: **[docs/TEST_FIXTURE_COVERAGE.md](docs/TEST_FIXTURE_COVERAGE.md)**.
 
 ## CLI examples
 

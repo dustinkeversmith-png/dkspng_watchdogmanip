@@ -1,5 +1,7 @@
-use crate::parse::boundary::model::{BoundaryCandidate, BoundaryKind, ParseDocumentInput};
-use crate::parse::model::CommandSeed;
+use crate::parse::boundary::model::{
+    BodyDirection, BodyShapeHint, BoundaryCandidate, BoundaryMarkerKind, BoundaryMetadataKind,
+    ParseDocumentInput,
+};
 use once_cell::sync::Lazy;
 use regex::Regex;
 
@@ -8,11 +10,15 @@ pub trait BoundaryStrategy {
     fn find_boundaries(&self, document: &ParseDocumentInput) -> Vec<BoundaryCandidate>;
 }
 
-static AT_COMMAND: Lazy<Regex> =
-    Lazy::new(|| Regex::new(r"(?x)^\s*(?:@[A-Za-z][A-Za-z0-9_/-]*(?:\s+|$))+").unwrap());
-static HASH_HEADING: Lazy<Regex> = Lazy::new(|| Regex::new(r"^\s*#{1,6}\s+").unwrap());
-
 pub struct CommandSeedBoundaryStrategy;
+
+impl CommandSeedBoundaryStrategy {
+    fn at_command_prefix() -> &'static Regex {
+        static RE: Lazy<Regex> =
+            Lazy::new(|| Regex::new(r"(?x)^\s*(?:@[A-Za-z][A-Za-z0-9_/-]*(?:\s+|$))+").unwrap());
+        &RE
+    }
+}
 
 impl BoundaryStrategy for CommandSeedBoundaryStrategy {
     fn name(&self) -> &'static str {
@@ -23,19 +29,46 @@ impl BoundaryStrategy for CommandSeedBoundaryStrategy {
         document
             .lines
             .iter()
-            .filter(|line| AT_COMMAND.is_match(&line.text))
-            .map(|line| BoundaryCandidate {
-                kind: BoundaryKind::CommandStart,
-                start_line: line.number,
-                end_line: None,
-                confidence: 0.96,
-                reason: "line starts with @command seed".to_string(),
+            .filter(|line| Self::at_command_prefix().is_match(&line.text))
+            .map(|line| {
+                let has_payload = line.text.trim().contains(' ')
+                    && !line.text.trim().ends_with('@');
+                let (meta, direction, shape) = if has_payload {
+                    (
+                        BoundaryMetadataKind::SameLinePayload,
+                        BodyDirection::InlineRight,
+                        BodyShapeHint::SingleLine,
+                    )
+                } else {
+                    (
+                        BoundaryMetadataKind::CommandSeedLine,
+                        BodyDirection::Below,
+                        BodyShapeHint::MultiLineBlock,
+                    )
+                };
+                BoundaryCandidate::build(
+                    self.name(),
+                    line,
+                    BoundaryMarkerKind::CommandStart,
+                    meta,
+                    direction,
+                    shape,
+                    0.96,
+                    "line starts with @command seed",
+                )
             })
             .collect()
     }
 }
 
 pub struct HeadingBoundaryStrategy;
+
+impl HeadingBoundaryStrategy {
+    fn heading_prefix() -> &'static Regex {
+        static RE: Lazy<Regex> = Lazy::new(|| Regex::new(r"^\s*#{1,6}\s+").unwrap());
+        &RE
+    }
+}
 
 impl BoundaryStrategy for HeadingBoundaryStrategy {
     fn name(&self) -> &'static str {
@@ -46,13 +79,18 @@ impl BoundaryStrategy for HeadingBoundaryStrategy {
         document
             .lines
             .iter()
-            .filter(|line| HASH_HEADING.is_match(&line.text))
-            .map(|line| BoundaryCandidate {
-                kind: BoundaryKind::HeadingBoundary,
-                start_line: line.number,
-                end_line: Some(line.number),
-                confidence: 0.85,
-                reason: "markdown heading".to_string(),
+            .filter(|line| Self::heading_prefix().is_match(&line.text))
+            .map(|line| {
+                BoundaryCandidate::build(
+                    self.name(),
+                    line,
+                    BoundaryMarkerKind::HeadingBoundary,
+                    BoundaryMetadataKind::HeadingSection,
+                    BodyDirection::Below,
+                    BodyShapeHint::MarkdownSection,
+                    0.85,
+                    "markdown heading",
+                )
             })
             .collect()
     }
@@ -70,12 +108,17 @@ impl BoundaryStrategy for BlankLineBoundaryStrategy {
             .lines
             .iter()
             .filter(|line| line.text.trim().is_empty())
-            .map(|line| BoundaryCandidate {
-                kind: BoundaryKind::BlankLineBoundary,
-                start_line: line.number,
-                end_line: Some(line.number),
-                confidence: 0.6,
-                reason: "blank line".to_string(),
+            .map(|line| {
+                BoundaryCandidate::build(
+                    self.name(),
+                    line,
+                    BoundaryMarkerKind::BlankLineBoundary,
+                    BoundaryMetadataKind::BlankLineTerminated,
+                    BodyDirection::None,
+                    BodyShapeHint::Empty,
+                    0.6,
+                    "blank line",
+                )
             })
             .collect()
     }
@@ -96,13 +139,16 @@ impl BoundaryStrategy for IndentationBoundaryStrategy {
                 continue;
             }
             if line.indent < prev.indent {
-                out.push(BoundaryCandidate {
-                    kind: BoundaryKind::IndentationBoundary,
-                    start_line: line.number,
-                    end_line: Some(line.number),
-                    confidence: 0.7,
-                    reason: format!("outdent from {} to {} spaces", prev.indent, line.indent),
-                });
+                out.push(BoundaryCandidate::build(
+                    self.name(),
+                    line,
+                    BoundaryMarkerKind::IndentationBoundary,
+                    BoundaryMetadataKind::OutdentTerminated,
+                    BodyDirection::Below,
+                    BodyShapeHint::IndentedBlock,
+                    0.7,
+                    format!("outdent from {} to {} spaces", prev.indent, line.indent),
+                ));
             }
         }
         out
@@ -110,6 +156,13 @@ impl BoundaryStrategy for IndentationBoundaryStrategy {
 }
 
 pub struct InlineCommandBoundaryStrategy;
+
+impl InlineCommandBoundaryStrategy {
+    fn bracket_body() -> &'static Regex {
+        static RE: Lazy<Regex> = Lazy::new(|| Regex::new(r"\[\s*[^\]]").unwrap());
+        &RE
+    }
+}
 
 impl BoundaryStrategy for InlineCommandBoundaryStrategy {
     fn name(&self) -> &'static str {
@@ -124,41 +177,63 @@ impl BoundaryStrategy for InlineCommandBoundaryStrategy {
                 let trimmed = line.text.trim();
                 trimmed.contains('@') && !trimmed.starts_with('@')
             })
-            .map(|line| BoundaryCandidate {
-                kind: BoundaryKind::InlineCommand,
-                start_line: line.number,
-                end_line: Some(line.number),
-                confidence: 0.55,
-                reason: "inline @command inside prose".to_string(),
+            .map(|line| {
+                let shape = if Self::bracket_body().is_match(&line.text) {
+                    BodyShapeHint::BracketedBlock
+                } else {
+                    BodyShapeHint::FreeformProse
+                };
+                BoundaryCandidate::build(
+                    self.name(),
+                    line,
+                    BoundaryMarkerKind::InlineCommand,
+                    BoundaryMetadataKind::InlineCommand,
+                    BodyDirection::Around,
+                    shape,
+                    0.55,
+                    "inline @command inside prose",
+                )
             })
             .collect()
     }
 }
 
-pub fn default_strategies() -> Vec<Box<dyn BoundaryStrategy>> {
-    vec![
-        Box::new(CommandSeedBoundaryStrategy),
-        Box::new(HeadingBoundaryStrategy),
-        Box::new(BlankLineBoundaryStrategy),
-        Box::new(IndentationBoundaryStrategy),
-        Box::new(InlineCommandBoundaryStrategy),
-    ]
+#[derive(Default)]
+pub struct BoundaryStrategyRegistry {
+    strategies: Vec<Box<dyn BoundaryStrategy>>,
+}
+
+impl BoundaryStrategyRegistry {
+    pub fn new() -> Self {
+        Self {
+            strategies: Vec::new(),
+        }
+    }
+
+    pub fn register(&mut self, strategy: Box<dyn BoundaryStrategy>) {
+        self.strategies.push(strategy);
+    }
+
+    pub fn collect_candidates(&self, document: &ParseDocumentInput) -> Vec<BoundaryCandidate> {
+        let mut candidates = Vec::new();
+        for strategy in &self.strategies {
+            candidates.extend(strategy.find_boundaries(document));
+        }
+        candidates.sort_by_key(|c| c.start_line);
+        candidates
+    }
+
+    pub fn with_defaults() -> Self {
+        let mut registry = Self::new();
+        registry.register(Box::new(CommandSeedBoundaryStrategy));
+        registry.register(Box::new(HeadingBoundaryStrategy));
+        registry.register(Box::new(BlankLineBoundaryStrategy));
+        registry.register(Box::new(IndentationBoundaryStrategy));
+        registry.register(Box::new(InlineCommandBoundaryStrategy));
+        registry
+    }
 }
 
 // TODO: NonLinearBoundarySearch
 // TODO: RelevanceBasedBoundarySearch
 // TODO: BackwardContentAttachment
-
-pub fn map_legacy_boundary(
-    seed: &CommandSeed,
-    next_seed_line: Option<usize>,
-    doc_len: usize,
-) -> BoundaryKind {
-    if next_seed_line.is_none() && seed.start_line_index + 1 >= doc_len {
-        BoundaryKind::CommandEnd
-    } else if next_seed_line.is_some() {
-        BoundaryKind::NextSeedBoundary
-    } else {
-        BoundaryKind::BlockCommand
-    }
-}

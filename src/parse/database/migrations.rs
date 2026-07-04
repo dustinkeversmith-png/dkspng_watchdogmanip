@@ -28,6 +28,11 @@ CREATE TABLE IF NOT EXISTS parsed_commands (
     content TEXT NOT NULL,
     members_json TEXT NOT NULL,
     source_trace TEXT NOT NULL,
+    file_path TEXT,
+    start_line INTEGER,
+    start_column INTEGER,
+    end_line INTEGER,
+    end_column INTEGER,
     created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY(source_id) REFERENCES sources(id) ON DELETE CASCADE,
     UNIQUE(source_id, command_id)

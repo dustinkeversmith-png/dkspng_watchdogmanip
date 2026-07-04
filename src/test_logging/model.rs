@@ -1,4 +1,5 @@
-use crate::database::model::DatabaseStats;
+use crate::parse::database::model::DatabaseStats;
+use crate::parse::model::SourceLocation;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use std::collections::BTreeMap;
@@ -158,6 +159,7 @@ pub struct CrossRefParseCommandRecord {
     pub raw_identity: String,
     pub title: Option<String>,
     pub source_trace: String,
+    pub location: SourceLocation,
     pub source_span: Option<SourceSpan>,
     pub content_preview: String,
     pub parameters: Vec<String>,
@@ -247,6 +249,7 @@ pub struct ParseCommandLogRecord {
     pub raw_identity: String,
     pub title: Option<String>,
     pub source_trace: String,
+    pub location: SourceLocation,
     pub content_preview: String,
     pub parameters: Vec<String>,
     pub tags: Vec<String>,

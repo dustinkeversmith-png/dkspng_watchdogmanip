@@ -22,4 +22,6 @@ pub struct DetectedSeed {
     pub line: usize,
     pub column: usize,
     pub confidence: f32,
+    #[serde(default)]
+    pub payload: String,
 }

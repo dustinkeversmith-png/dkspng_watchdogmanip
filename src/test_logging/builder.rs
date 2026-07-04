@@ -1,4 +1,4 @@
-use crate::database::model::DatabaseStats;
+use crate::parse::database::model::DatabaseStats;
 use crate::test_logging::model::{
     CommandRef, CrossRefDatabaseSection, CrossRefDatabaseTableLog, CrossRefParseCommandRecord,
     CrossRefParseFileRecord, CrossRefParseSection, CrossRefSearchHit, CrossRefSearchLogRecord,
@@ -173,7 +173,8 @@ impl TestOutputBuilder {
                     .cloned()
                     .unwrap_or_default();
 
-                let source_span = parse_source_span(&command.source_trace);
+                let source_span = source_span_from_location(&command.location)
+                    .or_else(|| parse_source_span(&command.source_trace));
                 if source_span.is_none() && !command.source_trace.trim().is_empty() {
                     diagnostics.push(TestOutputDiagnostic {
                         severity: "warn".to_string(),
@@ -206,6 +207,7 @@ impl TestOutputBuilder {
                     raw_identity: command.raw_identity.clone(),
                     title: command.title.clone(),
                     source_trace: command.source_trace.clone(),
+                    location: command.location.clone(),
                     source_span,
                     content_preview: command.content_preview.clone(),
                     parameters: command.parameters.clone(),
@@ -531,14 +533,37 @@ impl TestOutputBuilder {
     }
 }
 
-fn parse_source_span(source_trace: &str) -> Option<SourceSpan> {
-    let rest = source_trace.strip_prefix("lines ")?;
-    let mut parts = rest.split('-');
-    let start = parts.next()?.trim().parse().ok()?;
-    let end = parts.next()?.trim().parse().ok()?;
+fn source_span_from_location(location: &crate::parse::model::SourceLocation) -> Option<SourceSpan> {
     Some(SourceSpan {
-        start_line: start,
-        end_line: end,
+        start_line: location.start_line as u32,
+        end_line: location
+            .end_line
+            .unwrap_or(location.start_line) as u32,
+    })
+}
+
+fn parse_source_span(source_trace: &str) -> Option<SourceSpan> {
+    if let Some(rest) = source_trace.strip_prefix("lines ") {
+        let mut parts = rest.split('-');
+        let start = parts.next()?.trim().parse().ok()?;
+        let end = parts.next()?.trim().parse().ok()?;
+        return Some(SourceSpan {
+            start_line: start,
+            end_line: end,
+        });
+    }
+
+    let (_, line_part) = source_trace.rsplit_once(':')?;
+    if let Some((start, end)) = line_part.split_once('-') {
+        return Some(SourceSpan {
+            start_line: start.trim().parse().ok()?,
+            end_line: end.trim().parse().ok()?,
+        });
+    }
+    let line = line_part.trim().parse().ok()?;
+    Some(SourceSpan {
+        start_line: line,
+        end_line: line,
     })
 }
 
@@ -692,7 +717,15 @@ mod tests {
             kind: "Reference".to_string(),
             raw_identity: "@".to_string(),
             title: Some("Title".to_string()),
-            source_trace: "lines 1-2".to_string(),
+            source_trace: "demo.txt:1-2".to_string(),
+            location: crate::parse::model::SourceLocation {
+                source_name: "demo.txt".to_string(),
+                file_path: Some("demo.txt".into()),
+                start_line: 1,
+                start_column: 0,
+                end_line: Some(2),
+                end_column: None,
+            },
             content_preview: "preview".to_string(),
             parameters: vec![],
             tags: vec![],

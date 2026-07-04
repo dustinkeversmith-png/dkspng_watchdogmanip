@@ -2,6 +2,8 @@ use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
 
 use super::TextSpan;
+use super::SourceLocation;
+use crate::parse::shape::CommandShapeAnalysis;
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub enum BoundaryKind {
@@ -77,6 +79,9 @@ pub struct ParsedCommand {
     pub boundary_kind: BoundaryKind,
     pub span: TextSpan,
     pub source_trace: String,
+    pub location: SourceLocation,
+    #[serde(default)]
+    pub shape_analysis: Option<CommandShapeAnalysis>,
     #[serde(default)]
     pub parent_id: Option<String>,
     #[serde(default)]

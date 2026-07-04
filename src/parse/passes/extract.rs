@@ -3,8 +3,9 @@ use regex::Regex;
 use serde_json::json;
 use std::collections::BTreeMap;
 
+use crate::parse::boundary::CommandBlock;
 use crate::parse::model::{CommandKind, ParsedCommand};
-use crate::parse::passes::boundary::CommandBlock;
+use crate::parse::registry::{CommandRegistry, CommandSpec};
 
 static MEMBER_LINE: Lazy<Regex> = Lazy::new(|| {
     Regex::new(r"^\s*(?P<key>[A-Za-z][A-Za-z0-9 _/-]{1,40})\s*:\s*(?P<value>.*)$").unwrap()
@@ -20,6 +21,14 @@ static PATHISH: Lazy<Regex> = Lazy::new(|| {
 static URL: Lazy<Regex> = Lazy::new(|| Regex::new(r"https?://[^\s)]+").unwrap());
 
 pub fn extract_block(block: &CommandBlock, index: usize) -> ParsedCommand {
+    extract_block_with_registry(block, index, None)
+}
+
+pub fn extract_block_with_registry(
+    block: &CommandBlock,
+    index: usize,
+    registry: Option<&CommandRegistry>,
+) -> ParsedCommand {
     let raw_body = block.body_lines.join("\n").trim().to_string();
     let mut members = BTreeMap::new();
     let mut content_lines = Vec::new();
@@ -43,6 +52,17 @@ pub fn extract_block(block: &CommandBlock, index: usize) -> ParsedCommand {
             }
         } else {
             content_lines.push(line.clone());
+        }
+    }
+
+    if let Some(reg) = registry {
+        if let Some(spec) = reg.lookup_chain(&block.seed.chain) {
+            if title.is_none() {
+                title = value_from_tagged_members(&spec, &members, "title_candidate");
+            }
+            if description.is_none() {
+                description = value_from_tagged_members(&spec, &members, "description");
+            }
         }
     }
 
@@ -94,7 +114,9 @@ pub fn extract_block(block: &CommandBlock, index: usize) -> ParsedCommand {
         confidence_reason,
         boundary_kind: block.boundary_kind.clone(),
         span: block.span,
-        source_trace: format!("lines {}-{}", block.span.line_start, block.span.line_end),
+        source_trace: block.location.source_trace(),
+        location: block.location.clone(),
+        shape_analysis: block.shape_analysis.clone(),
         parent_id: None,
         child_ids: Vec::new(),
         hierarchy_path: Vec::new(),
@@ -103,11 +125,32 @@ pub fn extract_block(block: &CommandBlock, index: usize) -> ParsedCommand {
     }
 }
 
+fn value_from_tagged_members(
+    spec: &CommandSpec,
+    members: &BTreeMap<String, serde_json::Value>,
+    tag: &str,
+) -> Option<String> {
+    for member_spec in spec.members_with_tag(tag) {
+        for key in std::iter::once(&member_spec.name).chain(&member_spec.aliases) {
+            if let Some(value) = members.get(key).and_then(|v| v.as_str()) {
+                let trimmed = value.trim();
+                if !trimmed.is_empty() {
+                    return Some(trimmed.to_string());
+                }
+            }
+        }
+    }
+    None
+}
+
 fn infer_title(kind: &CommandKind, body: &str) -> Option<String> {
     let first = body.lines().map(str::trim).find(|l| !l.is_empty())?;
     let cleaned = first.trim_start_matches(['-', '*']).trim();
-    if cleaned.len() > 80 {
-        Some(format!("{}...", &cleaned[..77]))
+    if cleaned.chars().count() > 80 {
+        Some(format!(
+            "{}...",
+            cleaned.chars().take(77).collect::<String>()
+        ))
     } else if cleaned.is_empty() {
         match kind {
             CommandKind::ObjectiveQueue => Some("Objective Queue".to_string()),

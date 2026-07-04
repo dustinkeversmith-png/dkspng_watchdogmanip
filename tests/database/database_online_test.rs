@@ -58,6 +58,11 @@ fn sqlite_database_insert_get_and_search_round_trip() {
         references: vec!["./src/parse/parser.rs".to_string()],
         statuses: vec!["building".to_string()],
         source_trace: "docs/parser.md:4".to_string(),
+        file_path: Some("docs/parser.md".to_string()),
+        start_line: Some(4),
+        start_column: Some(0),
+        end_line: Some(6),
+        end_column: None,
     };
 
     let inserted_id = db

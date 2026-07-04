@@ -1,3 +1,4 @@
+use crate::parse::database::migrations::PARSE_COMMAND_REQUIRED_TABLES;
 use anyhow::{anyhow, Result};
 use rusqlite::Connection;
 
@@ -7,16 +8,6 @@ pub struct DatabaseHealthReport {
     pub required_tables_present: bool,
     pub missing_tables: Vec<String>,
 }
-
-pub const REQUIRED_TABLES: &[&str] = &[
-    "sources",
-    "parsed_commands",
-    "command_parameters",
-    "command_tags",
-    "command_references",
-    "command_statuses",
-    "command_fts",
-];
 
 pub fn check_sqlite_health(conn: &Connection) -> Result<DatabaseHealthReport> {
     let one: i64 = conn.query_row("SELECT 1", [], |row| row.get(0))?;
@@ -29,7 +20,7 @@ pub fn check_sqlite_health(conn: &Connection) -> Result<DatabaseHealthReport> {
 
     let mut missing_tables = Vec::new();
 
-    for table in REQUIRED_TABLES {
+    for table in PARSE_COMMAND_REQUIRED_TABLES {
         let exists: i64 = conn.query_row(
             r#"
             SELECT COUNT(*)

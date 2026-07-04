@@ -1,0 +1,6 @@
+{
+  "rust-analyzer.server.path": "C:\\Users\\Cutie Magic 500\\.rustup\\toolchains\\stable-x86_64-pc-windows-msvc\\bin\\rust-analyzer.exe",
+  "rust-analyzer.cargo.buildScripts.enable": true,
+  "rust-analyzer.checkOnSave": true,
+  "rust-analyzer.procMacro.enable": true
+}

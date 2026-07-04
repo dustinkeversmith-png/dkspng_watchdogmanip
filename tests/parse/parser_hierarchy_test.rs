@@ -31,10 +31,14 @@ fn parser_hierarchy_assigns_heading_context_to_nested_commands() {
         .find(|cmd| matches!(cmd.kind, macro_os_engines::parse::CommandKind::Task))
         .expect("expected at least one @Task");
 
-    assert!(task.source_trace.contains("lines"));
+    assert!(task.source_trace.contains("hierarchy_fixture.md"));
     assert!(
         !task.heading_context.is_empty() || !task.hierarchy_path.is_empty(),
-        "nested task should inherit heading context"
+        "nested task should inherit heading context from markdown heading signals"
+    );
+    assert!(
+        !output.hierarchy.iter().any(|n| n.signal_kinds.is_empty()),
+        "hierarchy nodes should record detector signal kinds"
     );
 
     for cmd in &output.commands {

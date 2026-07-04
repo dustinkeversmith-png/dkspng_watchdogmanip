@@ -5,3 +5,15 @@ some prose @current [ fix this later ]
 (deffered)
 
 @Idea fold this folder into parent when min_files_per_context is 2
+
+
+@tutorial large tutorial item any
+
+any types of boundaries within here will do 
+
+@project idea
+
+@deferred Idea
+
+# heading
+here is a heading
