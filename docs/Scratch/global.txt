@@ -1,0 +1,11 @@
+New page algorithms/page format or archival behavior efreshing, attachments and data templates, and then storing the previous incarnations
+What kind of knowledge bases are there to use for these types of things
+Testing storage rules, hierarchy rules, update and designing the auto contextual algorithm
+Possible workflow attachments testing the adherence
+Test building cascade graphs or context topologies
+
+1. View all scratch directories in projects and find representative hierarchy/format
+
+Move file easily to aliased location with auto routing, possibly a router entry file for redirection depending on file type for autoorganization
+
+Tag and Categorizaitions, searching etc

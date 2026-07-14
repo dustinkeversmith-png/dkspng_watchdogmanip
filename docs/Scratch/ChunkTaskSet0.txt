@@ -1,0 +1,27 @@
+# Tests
+Directories, aliasing marking, jumping to markers etc
+
+# Unknowns
+New page algorithms/page format or archival behavior
+What kind of knowledge bases are there to use for these types of things
+Testing storage rules, hierarchy rules, update and designing the auto contextual algorithm
+
+Possible workflow attachments testing the adherence
+
+Testing how to have smart nested/recursive context management, resolving hierarchies or parents
+
+
+Finding how the adaptive environments nested/recursive, nested modular environments, workflow environemts work and pin point the relation to groups or if it should just be groups/groups/groups/workspaces/environments figure out how all this would be mapped to a knowledge base
+
+
+Test building cascade graphs or context topologies
+
+Test adaptive associations, temporary symbolic assignment, jumping in and out of these zones
+
+Test pipeline components, like task generation, suggestions, or other things
+
+Possibly maintaining or updating a core object set
+
+When refactoring think how and where kind of implementation or feature ports are setup
+
+@Environments:[unique], can possibly go in and accumulate this for a merge or like understanding analysis of the different object types etc

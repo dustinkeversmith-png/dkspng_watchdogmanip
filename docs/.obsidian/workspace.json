@@ -4,21 +4,19 @@
     "type": "split",
     "children": [
       {
-        "id": "c17d19d83d0ec68b",
+        "id": "ad1968d57be2ab34",
         "type": "tabs",
         "children": [
           {
-            "id": "b9ef7f2aacec85e7",
+            "id": "533070e1a28e3467",
             "type": "leaf",
+            "pinned": true,
             "state": {
-              "type": "markdown",
-              "state": {
-                "file": "Missions/m_1/m_1.md",
-                "mode": "source",
-                "source": false
-              },
+              "type": "empty",
+              "state": {},
+              "pinned": true,
               "icon": "lucide-file",
-              "title": "m_1"
+              "title": "New tab"
             }
           }
         ]
@@ -181,13 +179,31 @@
       "bases:Create new base": false
     }
   },
-  "active": "b9ef7f2aacec85e7",
+  "active": "fe6d6bbd7b621749",
   "lastOpenFiles": [
+    "Software/Database-Viewer/JSON Tester.md",
+    "Rules/Live Testing with Debug Output Verification.md",
+    "Rules/Inline Documentation.md",
+    "Software/Database-Viewer/JSON Adapter.md",
+    "Rules",
+    "COMPOSER/SUPER_SHAPE_ORIG_NOTES.md",
+    "Software/Database-Viewer/Missions/m_1/m_1.md",
+    "Software/Database-Viewer/Index.md",
+    "Software/Database-Viewer/Missions/m_1",
+    "Software/Database-Viewer/Missions",
+    "Missions/m_3/m_3.md",
+    "Missions/m_2/m_2.md",
+    "Missions/m_3",
+    "PARSE_README.md",
+    "Software/Database-Viewer/DevelopmentDocument.md",
+    "Missions/m_1/m_1.md",
+    "Software/Database-Viewer",
+    "Software",
+    "Missions/m_2",
     "COMPOSER/MACRO_PROCESSING_INLINE_UPDATE.md",
     "SOURCE_REFERENCE_FORMAT.md",
     "COMPOSER/CHANGES_4.md",
     "COMPOSER/CHANGES_DOCS.md",
-    "COMPOSER/SUPER_SHAPE_ORIG_NOTES.md",
     "COMPOSER/SUPER_SHAPE_ENHANCER_GUIDE.md",
     "COMPOSER/CHNAGES_4.md",
     "COMPOSER/CHANGES_NOTES.md",
@@ -195,22 +211,11 @@
     "COMPOSER/CHANGES_3.md",
     "COMPOSER/CHANGES_2.md",
     "COMPOSER/CHANGES_1.md",
-    "PARSE_README.md",
     "NAVIGATION_ARCHITECTURE.md",
     "DATABASE_SETUP.md",
-    "Missions/m_1/m_1.md",
     "Missions/m_1/LOG_EXPANSION.md",
-    "COMPOSER/CROSS_REFERENCE_LOG.md",
     "COMPOSER",
     "Missions/m_1",
-    "Missions",
-    "TOPICS_LIST.md",
-    "PAR_DATA_STRUCTURES.md",
-    "Todo.md",
-    "NEURAL_OPERATOR/AI/GALERKIN_MAGIC.md",
-    "AI/FIELDS_INFO.md",
-    "AI/GPU_STRUCT.md",
-    "AI",
-    "NEURAL_OPERATOR/AI/Darcy A(x).md"
+    "Missions"
   ]
 }

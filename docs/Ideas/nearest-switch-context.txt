@@ -1,0 +1,1 @@
+a like short cut to switch desktop workflows or to like nearest git bash console, some kind of buffer or loaded buffer context specifically commands possibly for a window or routine

@@ -1,0 +1,8 @@
+# Algorithms
+Tag and Categorize Project
+	Test this process/automating it
+Denote documentation structure and intended behaviors/rules
+Denote any workflow structures being helped to use/capabilities denoting
+
+# Pick a few ideas or features to test
+# Implement/research aliasing and like fuzzy searching

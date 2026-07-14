@@ -1,3 +1,7 @@
+# A TESTME document is a formed TESTME stub description which could be used to be generated per feature
+
+@todo update the testme format and instruction set per feature description behavior.
+
 Done — I merged the uploaded package into **one Rust application** while keeping each engine modularly separated.
 
 [Download the unified Rust app](sandbox:/mnt/data/macro_os_engines_app.zip)
